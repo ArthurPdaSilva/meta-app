@@ -12,7 +12,7 @@ import {
 	UseGuards,
 } from "@nestjs/common";
 import { JwtAuthGuard } from "../auth/auth.guard";
-import type { ChecklistService } from "./checklist.service";
+import { ChecklistService } from "./checklist.service";
 
 @Controller("checklist")
 @UseGuards(JwtAuthGuard)

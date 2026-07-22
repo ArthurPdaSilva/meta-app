@@ -10,7 +10,7 @@ import {
 	UseGuards,
 } from "@nestjs/common";
 import { JwtAuthGuard } from "../auth/auth.guard";
-import type { GoalsService } from "./goals.service";
+import { GoalsService } from "./goals.service";
 
 @Controller("goals")
 @UseGuards(JwtAuthGuard)
