@@ -184,6 +184,7 @@ O projeto possui pipeline CI definido em `.github/workflows/ci.yml` com três jo
 | Variável | Descrição |
 |----------|-----------|
 | `PORT` | Porta do servidor (default: 3001) |
+| `DATABASE_PATH` | Caminho do arquivo SQLite (default: `./data/metaapp.db`) |
 | `JWT_SECRET` | Chave secreta para JWT |
 
 ## Arquitetura Frontend (Camadas)

@@ -1,3 +1,5 @@
+import * as fs from "node:fs";
+import * as path from "node:path";
 import Database from "better-sqlite3";
 
 export class SQLitePool {
@@ -7,7 +9,12 @@ export class SQLitePool {
 		if (existingDb) {
 			this.db = existingDb;
 		} else {
-			this.db = new Database(":memory:");
+			const dbPath = process.env.DATABASE_PATH || "./data/metaapp.db";
+			const dir = path.dirname(dbPath);
+			if (!fs.existsSync(dir)) {
+				fs.mkdirSync(dir, { recursive: true });
+			}
+			this.db = new Database(dbPath);
 			this.db.pragma("journal_mode = WAL");
 			this.db.function("now", () => new Date().toISOString());
 			this.db.exec(`
