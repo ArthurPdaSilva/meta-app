@@ -70,6 +70,7 @@ features/auth/
 | `FormInput` | Input com label, placeholder, `secureTextEntry` e exibição de erro |
 | `ControlledFormInput` | Wrapper que integra `FormInput` com React Hook Form (`Controller`) |
 | `ConfirmModal` | Modal de confirmação com dois botões para ações destrutivas |
+| `Alert` | Sistema de toasts com `alert.success()`, `alert.error()` e `alert.info()` via `react-native-toast-message` |
 
 ### Tela de Checklist
 
@@ -116,7 +117,7 @@ O backend usa SQLite em memória por padrão (via `better-sqlite3`). Nenhuma con
 cd backend
 pnpm test
 
-# Frontend (Jest + React Native Testing Library) — 14 suites, 69 testes
+# Frontend (Jest + React Native Testing Library) — 15 suites, 75 testes
 cd frontend
 pnpm test
 ```
@@ -130,6 +131,7 @@ Os testes espelham a estrutura de `src/` usando imports **relativos**:
 | `shared/CustomButton.tsx` | `__tests__/shared/CustomButton.test.tsx` |
 | `shared/FormInput.tsx` | `__tests__/shared/FormInput.test.tsx` |
 | `shared/ConfirmModal.tsx` | `__tests__/shared/ConfirmModal.test.tsx` |
+| `shared/Alert.tsx` | `__tests__/shared/Alert.test.tsx` |
 | `stores/authStore.ts` | `__tests__/features/auth/stores/authStore.test.ts` |
 | `features/auth/schemas/authSchemas.ts` | `__tests__/features/auth/schemas/authSchemas.test.ts` |
 | `features/auth/services/authApi.ts` | `__tests__/features/auth/services/authApi.test.ts` |
@@ -239,6 +241,7 @@ features/checklist/
 - **Tooling**: Biome (Linting & Formatting)
 - **Gerenciamento de Pacotes**: pnpm
 - **Testes**: Jest 29 + React Native Testing Library 12
+- **Toast**: react-native-toast-message
 - **Design System**: Tokens centralizados em `styles/tokens.ts`
 
 ### Backend
@@ -261,6 +264,7 @@ frontend/src/
     FormInput.tsx         # Input de formulário com label e erro
     ControlledFormInput.tsx  # Wrapper FormInput + React Hook Form
     ConfirmModal.tsx      # Modal de confirmação
+    Alert.tsx             # Sistema de toasts (alert.success/error/info)
   features/               # Módulos por domínio
     auth/
       AuthContainer.tsx   # Container — gerencia estado do formulário
@@ -291,6 +295,7 @@ frontend/src/
       CustomButton.test.tsx
       FormInput.test.tsx
       ConfirmModal.test.tsx
+      Alert.test.tsx
     features/
       auth/
         AuthContainer.test.tsx

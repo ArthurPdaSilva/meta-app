@@ -60,27 +60,14 @@ describe("ConfirmModal", () => {
 		expect(onCancel).toHaveBeenCalledTimes(1);
 	});
 
-	it("chama onCancel ao pressionar overlay", () => {
-		const onCancel = jest.fn();
-		render(
-			<ConfirmModal
-				visible
-				title="Remover"
-				message="Confirma?"
-				onConfirm={jest.fn()}
-				onCancel={onCancel}
-			/>,
-		);
-	});
-
 	it("renderiza texto personalizado dos botoes", () => {
 		const { getByText } = render(
 			<ConfirmModal
 				visible
 				title="Remover"
 				message="Confirma?"
-				confirmText="Sim"
-				cancelText="Não"
+				confirmLabel="Sim"
+				cancelLabel="Não"
 				onConfirm={jest.fn()}
 				onCancel={jest.fn()}
 			/>,

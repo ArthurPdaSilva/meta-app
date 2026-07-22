@@ -1,5 +1,4 @@
 import { fireEvent, render } from "@testing-library/react-native";
-import { Alert } from "react-native";
 import type { ChecklistScreenProps } from "../../../features/checklist/ChecklistScreen";
 import { ChecklistScreen } from "../../../features/checklist/ChecklistScreen";
 
@@ -92,20 +91,13 @@ describe("ChecklistScreen", () => {
 		expect(onCreateGoal).toHaveBeenCalledWith("Exercitar");
 	});
 
-	it("chama onAdvanceDay ao confirmar no Alert", () => {
+	it("chama onAdvanceDay ao confirmar no modal", () => {
 		const onAdvanceDay = jest.fn();
-		const alertSpy = jest
-			.spyOn(Alert, "alert")
-			.mockImplementation((_title, _msg, buttons) => {
-				const btn = buttons?.[1];
-				if (btn && "onPress" in btn && btn.onPress) btn.onPress();
-			});
-
 		const { getByText } = render(
 			<ChecklistScreen {...createProps({ onAdvanceDay })} />,
 		);
 		fireEvent.press(getByText("Avançar Dia"));
+		fireEvent.press(getByText("Avançar"));
 		expect(onAdvanceDay).toHaveBeenCalled();
-		alertSpy.mockRestore();
 	});
 });

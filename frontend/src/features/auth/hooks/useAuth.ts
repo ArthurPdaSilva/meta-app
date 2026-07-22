@@ -3,6 +3,7 @@ import { useRouter } from "expo-router";
 import { useCallback, useMemo, useState } from "react";
 import type { Resolver } from "react-hook-form";
 import { useForm } from "react-hook-form";
+import { alert } from "@/shared/Alert";
 import { useAuthStore } from "@/stores/authStore";
 import { loginSchema, registerSchema } from "../schemas/authSchemas";
 import { loginRequest, registerRequest } from "../services/authApi";
@@ -44,9 +45,14 @@ export function useAuth() {
 					? await loginRequest(data.email, data.password)
 					: await registerRequest(data.email, data.password, data.name);
 				setAuth(result.token, result.user);
+				alert.success(
+					isLogin ? "Login realizado com sucesso" : "Conta criada com sucesso",
+				);
 				router.replace("/");
 			} catch (err) {
-				setError(err instanceof Error ? err.message : "Erro inesperado");
+				const message = err instanceof Error ? err.message : "Erro inesperado";
+				setError(message);
+				alert.error(message);
 			} finally {
 				setLoading(false);
 			}

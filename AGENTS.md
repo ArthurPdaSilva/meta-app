@@ -89,7 +89,9 @@ features/checklist/
 
 ### UI
 - Design tokens de `@/styles/tokens` (colors, spacing, borderRadius, fontSize, …)
-- Componentes compartilhados em `@/shared/` (CustomButton, FormInput, ConfirmModal, …)
+- Componentes compartilhados em `@/shared/` (CustomButton, FormInput, ConfirmModal, Alert, …)
+- **Alert**: sistema de toasts via `react-native-toast-message` — `alert.success()`, `alert.error()`, `alert.info()`
+- Toast renderizado no root layout (`_layout.tsx`) via `<Toast config={toastConfig} />`
 - Ícones: `@expo/vector-icons` (MaterialCommunityIcons)
 
 ### Navegação
@@ -184,7 +186,7 @@ CREATE TABLE checklist_items (
 - Sempre usar `pnpm install`, `pnpm add`, `pnpm remove` — nunca `npm`
 - Lockfile: `pnpm-lock.yaml`
 
-### Frontend (Jest + React Native Testing Library) — 14 suites, 69 testes
+### Frontend (Jest + React Native Testing Library) — 15 suites, 75 testes
 - `jest-expo` preset · Jest 29 (v30 é incompatível com `@react-native/jest-preset`)
 - `render` e queries são **assíncronos** (`@testing-library/react-native` v14)
 - Stores resetadas com `useXStore.setState()` no `beforeEach`
@@ -193,7 +195,7 @@ CREATE TABLE checklist_items (
 - **Estrutura espelha a source**: `src/shared/X.tsx` → `src/__tests__/shared/X.test.tsx`, `src/features/X/stores/Y.ts` → `src/__tests__/features/X/stores/Y.test.ts`
 - **Container/Screen**: `src/features/X/Container.tsx` → `src/__tests__/features/X/Container.test.tsx`
 - **Hooks**: `src/features/X/hooks/Y.ts` → `src/__tests__/features/X/hooks/Y.test.tsx`
-- Testes existentes: CustomButton, FormInput, ConfirmModal, authStore, authSchemas, authApi, useAuth, AuthContainer, AuthScreen, useDayProgress, useChecklist, ChecklistContainer, ChecklistScreen
+- Testes existentes: CustomButton, FormInput, ConfirmModal, Alert, authStore, authSchemas, authApi, useAuth, AuthContainer, AuthScreen, useDayProgress, useChecklist, ChecklistContainer, ChecklistScreen
 
 ### Backend (Vitest + Supertest) — 5 suites, 26 testes
 - `globals: true`, ambiente `node`

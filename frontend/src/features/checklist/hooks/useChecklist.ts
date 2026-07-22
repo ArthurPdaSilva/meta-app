@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useState } from "react";
+import { alert } from "@/shared/Alert";
 import { useAuthStore } from "@/stores/authStore";
 import type { DayData, Goal } from "@/types";
 import {
@@ -45,49 +46,76 @@ export function useChecklist() {
 
 	async function handleAddItem(title: string, goalId?: number) {
 		if (!token) return;
-		const item = await addItem(token, title, goalId);
-		setDayData((prev) =>
-			prev ? { ...prev, items: [...prev.items, item] } : prev,
-		);
+		try {
+			const item = await addItem(token, title, goalId);
+			setDayData((prev) =>
+				prev ? { ...prev, items: [...prev.items, item] } : prev,
+			);
+		} catch {
+			alert.error("Erro ao adicionar item");
+		}
 	}
 
 	async function handleToggleItem(id: number) {
 		if (!token) return;
-		const updated = await toggleItem(token, id);
-		setDayData((prev) =>
-			prev
-				? {
-						...prev,
-						items: prev.items.map((i) => (i.id === id ? updated : i)),
-					}
-				: prev,
-		);
+		try {
+			const updated = await toggleItem(token, id);
+			setDayData((prev) =>
+				prev
+					? {
+							...prev,
+							items: prev.items.map((i) => (i.id === id ? updated : i)),
+						}
+					: prev,
+			);
+		} catch {
+			alert.error("Erro ao atualizar item");
+		}
 	}
 
 	async function handleRemoveItem(id: number) {
 		if (!token) return;
-		await removeItem(token, id);
-		setDayData((prev) =>
-			prev ? { ...prev, items: prev.items.filter((i) => i.id !== id) } : prev,
-		);
+		try {
+			await removeItem(token, id);
+			setDayData((prev) =>
+				prev ? { ...prev, items: prev.items.filter((i) => i.id !== id) } : prev,
+			);
+		} catch {
+			alert.error("Erro ao remover item");
+		}
 	}
 
 	async function handleCreateGoal(title: string) {
 		if (!token) return;
-		const goal = await createGoal(token, title);
-		setGoals((prev) => [...prev, goal]);
+		try {
+			const goal = await createGoal(token, title);
+			setGoals((prev) => [...prev, goal]);
+			alert.success("Meta criada com sucesso");
+		} catch {
+			alert.error("Erro ao criar meta");
+		}
 	}
 
 	async function handleDeleteGoal(id: number) {
 		if (!token) return;
-		await deleteGoal(token, id);
-		setGoals((prev) => prev.filter((g) => g.id !== id));
+		try {
+			await deleteGoal(token, id);
+			setGoals((prev) => prev.filter((g) => g.id !== id));
+			alert.success("Meta removida com sucesso");
+		} catch {
+			alert.error("Erro ao remover meta");
+		}
 	}
 
 	async function handleAdvanceDay() {
 		if (!token) return;
-		const day = await advanceDay(token);
-		setDayData(day);
+		try {
+			const day = await advanceDay(token);
+			setDayData(day);
+			alert.success("Dia avançado com sucesso");
+		} catch {
+			alert.error("Erro ao avançar dia");
+		}
 	}
 
 	return {

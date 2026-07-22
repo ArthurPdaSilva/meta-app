@@ -1,3 +1,4 @@
+import { alert } from "@/shared/Alert";
 import { useAuthStore } from "@/stores/authStore";
 import { ChecklistScreen } from "./ChecklistScreen";
 import { useChecklist } from "./hooks/useChecklist";
@@ -20,6 +21,11 @@ export function ChecklistContainer() {
 
 	const logout = useAuthStore((s) => s.logout);
 
+	function handleLogout() {
+		alert.info("Você saiu da sua conta");
+		logout();
+	}
+
 	return (
 		<ChecklistScreen
 			dayData={dayData}
@@ -34,7 +40,7 @@ export function ChecklistContainer() {
 			onCreateGoal={handleCreateGoal}
 			onDeleteGoal={handleDeleteGoal}
 			onAdvanceDay={handleAdvanceDay}
-			onLogout={logout}
+			onLogout={handleLogout}
 		/>
 	);
 }

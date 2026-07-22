@@ -1,7 +1,6 @@
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { useState } from "react";
 import {
-	Alert,
 	FlatList,
 	StyleSheet,
 	Text,
@@ -49,6 +48,7 @@ export function ChecklistScreen({
 	const [newGoalText, setNewGoalText] = useState("");
 	const [showGoalInput, setShowGoalInput] = useState(false);
 	const [removingId, setRemovingId] = useState<number | null>(null);
+	const [showAdvanceConfirm, setShowAdvanceConfirm] = useState(false);
 
 	const handleAdd = () => {
 		const text = newItemText.trim();
@@ -195,19 +195,7 @@ export function ChecklistScreen({
 						<CustomButton
 							title="Avançar Dia"
 							variant="primary"
-							onPress={() => {
-								Alert.alert(
-									"Avançar Dia",
-									"O checklist atual será limpo. Deseja continuar?",
-									[
-										{ text: "Cancelar", style: "cancel" },
-										{
-											text: "Avançar",
-											onPress: onAdvanceDay,
-										},
-									],
-								);
-							}}
+							onPress={() => setShowAdvanceConfirm(true)}
 						/>
 					</View>
 				)}
@@ -217,11 +205,24 @@ export function ChecklistScreen({
 				visible={removingId !== null}
 				title="Remover item"
 				message="Tem certeza que deseja remover este item do checklist?"
-				confirmText="Remover"
-				cancelText="Cancelar"
-				confirmVariant="danger"
+				confirmLabel="Remover"
+				cancelLabel="Cancelar"
 				onConfirm={handleConfirmRemove}
 				onCancel={() => setRemovingId(null)}
+			/>
+			<ConfirmModal
+				visible={showAdvanceConfirm}
+				title="Avançar Dia"
+				message="O checklist atual será limpo. Deseja continuar?"
+				confirmLabel="Avançar"
+				cancelLabel="Cancelar"
+				icon="arrow-forward"
+				iconColor={colors.primary}
+				onConfirm={() => {
+					onAdvanceDay();
+					setShowAdvanceConfirm(false);
+				}}
+				onCancel={() => setShowAdvanceConfirm(false)}
 			/>
 		</View>
 	);
