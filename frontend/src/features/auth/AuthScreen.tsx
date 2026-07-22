@@ -101,21 +101,23 @@ export function AuthScreen({
 						/>
 					) : null}
 
-					<CustomButton
-						title={isLogin ? "Entrar" : "Criar Conta"}
-						onPress={onSubmit}
-						loading={loading}
-					/>
+					<View style={styles.btns}>
+						<CustomButton
+							title={isLogin ? "Entrar" : "Criar Conta"}
+							onPress={onSubmit}
+							loading={loading}
+						/>
 
-					<CustomButton
-						title={
-							isLogin
-								? "Não tem conta? Cadastre-se"
-								: "Já tem conta? Faça login"
-						}
-						variant="secondary"
-						onPress={onToggleMode}
-					/>
+						<CustomButton
+							title={
+								isLogin
+									? "Não tem conta? Cadastre-se"
+									: "Já tem conta? Faça login"
+							}
+							variant="secondary"
+							onPress={onToggleMode}
+						/>
+					</View>
 				</View>
 			</ScrollView>
 		</KeyboardAvoidingView>
@@ -164,5 +166,9 @@ const styles = StyleSheet.create({
 		marginBottom: spacing.md,
 		fontSize: fontSize.sm,
 		textAlign: "center",
+	},
+	btns: {
+		marginTop: spacing.md,
+		gap: spacing.sm,
 	},
 });

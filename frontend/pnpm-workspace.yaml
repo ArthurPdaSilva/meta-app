@@ -1,0 +1,2 @@
+patchedDependencies:
+  jest-expo: patches/jest-expo.patch

@@ -185,8 +185,8 @@ features/checklist/
 ## Tecnologias
 
 ### Frontend
-- **Framework**: React Native (Expo)
-- **Linguagem**: TypeScript
+- **Framework**: React Native (Expo SDK 53 — New Architecture habilitada)
+- **Linguagem**: TypeScript 5.9
 - **Importação**: Path alias `@/` apontando para `src/`
 - **Gerenciamento de Estado**: Zustand + Persist Middleware
 - **Formulários**: React Hook Form + Zod
