@@ -186,7 +186,8 @@ export function ChecklistScreen({
 							<Text style={styles.goalText}>{goal.title}</Text>
 							<TouchableOpacity
 								testID={`delete-goal-${goal.id}`}
-								onPress={() => setDeletingGoalId(goal.id)}>
+								onPress={() => setDeletingGoalId(goal.id)}
+							>
 								<MaterialCommunityIcons
 									name="delete-outline"
 									size={18}
@@ -210,14 +211,14 @@ export function ChecklistScreen({
 						/>
 						<View style={styles.goalButtonRow}>
 							<CustomButton
-								title="Criar"
-								onPress={handleCreateGoal}
-								disabled={!newGoalText.trim()}
-							/>
-							<CustomButton
 								title="Cancelar"
 								variant="secondary"
 								onPress={() => setShowGoalInput(false)}
+							/>
+							<CustomButton
+								title="Criar"
+								onPress={handleCreateGoal}
+								disabled={!newGoalText.trim()}
 							/>
 						</View>
 					</View>
@@ -322,7 +323,6 @@ const styles = StyleSheet.create({
 		backgroundColor: colors.surface,
 	},
 	input: {
-		flex: 1,
 		borderWidth: 1,
 		borderColor: colors.border,
 		borderRadius: borderRadius.sm,
