@@ -65,10 +65,10 @@ describe("ChecklistScreen", () => {
 		expect(getByText("1/2 concluídos")).toBeTruthy();
 	});
 
-	it("renderiza botoes de Nova Meta e Avancar Dia", () => {
+	it("renderiza botoes de Nova Meta e Concluir por hoje", () => {
 		const { getByText } = render(<ChecklistScreen {...createProps()} />);
 		expect(getByText("Nova Meta")).toBeTruthy();
-		expect(getByText("Avançar Dia")).toBeTruthy();
+		expect(getByText("Concluir por hoje")).toBeTruthy();
 	});
 
 	it("mostra input de nova meta ao clicar em Nova Meta", () => {
@@ -96,8 +96,8 @@ describe("ChecklistScreen", () => {
 		const { getByText } = render(
 			<ChecklistScreen {...createProps({ onAdvanceDay })} />,
 		);
-		fireEvent.press(getByText("Avançar Dia"));
-		fireEvent.press(getByText("Avançar"));
+		fireEvent.press(getByText("Concluir por hoje"));
+		fireEvent.press(getByText("Concluir"));
 		expect(onAdvanceDay).toHaveBeenCalled();
 	});
 

@@ -87,6 +87,6 @@ export async function advanceDay(token: string): Promise<DayData> {
 		method: "POST",
 		headers: headers(token),
 	});
-	if (!res.ok) throw new Error("Erro ao avançar dia");
+	if (!res.ok) throw new Error("Erro ao concluir checklist");
 	return res.json();
 }

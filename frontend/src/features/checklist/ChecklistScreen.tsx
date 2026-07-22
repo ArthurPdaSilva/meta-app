@@ -115,7 +115,7 @@ export function ChecklistScreen({
 
 			<View style={styles.inputRow}>
 				<TextInput
-					style={styles.input}
+					style={styles.itemInput}
 					value={newItemText}
 					onChangeText={setNewItemText}
 					placeholder="Adicionar item ao checklist..."
@@ -203,7 +203,7 @@ export function ChecklistScreen({
 				{showGoalInput ? (
 					<View style={styles.goalInputColumn}>
 						<TextInput
-							style={styles.input}
+							style={styles.goalsInput}
 							value={newGoalText}
 							onChangeText={setNewGoalText}
 							placeholder="Nome da nova meta..."
@@ -230,7 +230,7 @@ export function ChecklistScreen({
 							onPress={() => setShowGoalInput(true)}
 						/>
 						<CustomButton
-							title="Avançar Dia"
+							title="Concluir por hoje"
 							variant="primary"
 							onPress={() => setShowAdvanceConfirm(true)}
 						/>
@@ -258,12 +258,13 @@ export function ChecklistScreen({
 			/>
 			<ConfirmModal
 				visible={showAdvanceConfirm}
-				title="Avançar Dia"
-				message="O checklist atual será limpo. Deseja continuar?"
-				confirmLabel="Avançar"
+				title="Concluir por hoje"
+				message="Finalizar o checklist de hoje?"
+				confirmLabel="Concluir"
+				confirmVariant="primary"
 				cancelLabel="Cancelar"
-				icon="arrow-forward"
-				iconColor={colors.primary}
+				icon="check-circle"
+				iconColor={colors.success}
 				onConfirm={() => {
 					onAdvanceDay();
 					setShowAdvanceConfirm(false);
@@ -322,7 +323,18 @@ const styles = StyleSheet.create({
 		gap: spacing.sm,
 		backgroundColor: colors.surface,
 	},
-	input: {
+	itemInput: {
+		flex: 1,
+		borderWidth: 1,
+		borderColor: colors.border,
+		borderRadius: borderRadius.sm,
+		paddingHorizontal: spacing.md,
+		paddingVertical: spacing.sm,
+		fontSize: fontSize.md,
+		color: colors.text,
+		backgroundColor: colors.background,
+	},
+	goalsInput: {
 		borderWidth: 1,
 		borderColor: colors.border,
 		borderRadius: borderRadius.sm,

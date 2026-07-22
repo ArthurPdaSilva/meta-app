@@ -120,10 +120,10 @@ features/auth/
 ### Checklist / Metas
 - Tela principal exibe o dia atual e as metas do usuário
 - Checklist com itens que podem ser marcados como concluídos
-- Botão "Avançar Dia" limpa o checklist e retorna o dia seguinte
-- Metas são persistentes (não somem ao avançar dia)
+- Botão "Concluir por hoje" limpa o checklist e retorna o dia seguinte
+- Metas são persistentes (não somem ao concluir o dia)
 - Itens do checklist são específicos de cada dia
-- `useChecklist` hook gerencia estado local (dayData, goals, loading) e expõe handlers (add, toggle, remove, createGoal, deleteGoal, advanceDay)
+- `useChecklist` hook gerencia estado local (dayData, goals, loading) e expõe handlers (add, toggle, remove, createGoal, deleteGoal, advanceDay/concluirDia)
 - `useDayProgress` hook calcula total, completed e percentage a partir dos itens
 
 ```

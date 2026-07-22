@@ -6,7 +6,9 @@ jest.mock("react-native-toast-message", () => {
 	const React = require("react");
 	const RN = require("react-native");
 	const MockBaseToast = ({ text1, text2 }) =>
-		React.createElement(RN.View, null,
+		React.createElement(
+			RN.View,
+			null,
 			React.createElement(RN.Text, { testID: "toast-text1" }, text1),
 			React.createElement(RN.Text, { testID: "toast-text2" }, text2),
 		);

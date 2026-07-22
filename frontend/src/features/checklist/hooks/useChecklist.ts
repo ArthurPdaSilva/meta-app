@@ -4,7 +4,6 @@ import { useAuthStore } from "@/stores/authStore";
 import type { DayData, Goal } from "@/types";
 import {
 	addItem,
-	advanceDay,
 	createGoal,
 	deleteGoal,
 	fetchDayData,
@@ -108,14 +107,12 @@ export function useChecklist() {
 	}
 
 	async function handleAdvanceDay() {
-		if (!token) return;
-		try {
-			const day = await advanceDay(token);
-			setDayData(day);
-			alert.success("Dia avançado com sucesso");
-		} catch {
-			alert.error("Erro ao avançar dia");
-		}
+		if (!dayData) return;
+		setDayData({
+			...dayData,
+			items: dayData.items.map((item) => ({ ...item, completed: false })),
+		});
+		alert.success("Checklist de hoje concluído!");
 	}
 
 	return {

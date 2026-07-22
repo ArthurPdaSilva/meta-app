@@ -1,6 +1,6 @@
 # Meta App — Acompanhamento de Metas Diárias
 
-App React Native (Expo) com backend NestJS para acompanhamento de metas e checklists diários. O usuário define metas, adiciona itens ao checklist do dia, e avança os dias — ao avançar, o checklist é limpo para o novo dia.
+App React Native (Expo) com backend NestJS para acompanhamento de metas e checklists diários. O usuário define metas, adiciona itens ao checklist do dia, e conclui o dia — ao concluir, o checklist é limpo para o novo dia.
 
 ## Estrutura do Projeto (Monorepo)
 
@@ -33,14 +33,14 @@ O app permite que o usuário gerencie suas metas e checklists diários de forma 
 
 - **Metas**: Metas persistentes definidas pelo usuário
 - **Checklist Diário**: Itens específicos do dia que podem ser marcados como concluídos
-- **Avançar Dia**: Ao avançar, o checklist é limpo e o contador de dias é incrementado
+- **Concluir por hoje**: Finaliza o checklist do dia, limpando os itens para o novo dia
 - **Autenticação**: Sistema simples de login/registro via backend
 
 ## Principais Funcionalidades
 
 - **Gestão de Metas**: Criar e gerenciar metas persistentes
 - **Checklist Diário**: Adicionar itens ao checklist do dia e marcá-los como concluídos
-- **Avanço de Dias**: Botão para avançar o dia, limpando o checklist e atualizando o contador
+- **Concluir por hoje**: Botão para finalizar o checklist do dia, limpando os itens para o novo dia
 - **Autenticação**: Sistema de registro e login com email e senha
 
 ### Fluxo de Autenticação
@@ -79,7 +79,7 @@ A tela principal exibe:
 - **Barra de progresso**: Percentual de itens concluídos
 - **Input rápido**: Adicionar item ao checklist do dia
 - **Lista de itens**: Cada item com checkbox (toggle) e botão de deletar (com confirmação)
-- **Footer**: Botões para criar nova meta e avançar dia
+- **Footer**: Botões para criar nova meta e concluir por hoje
 
 ## Como Rodar o Projeto
 
@@ -326,7 +326,7 @@ frontend/src/
 | POST | `/checklist` | JWT | Adicionar item |
 | PATCH | `/checklist/:id` | JWT | Alternar item |
 | DELETE | `/checklist/:id` | JWT | Remover item |
-| POST | `/checklist/advance-day` | JWT | Avançar dia |
+| POST | `/checklist/advance-day` | JWT | Concluir por hoje |
 
 ## Schema do Banco
 

@@ -10,6 +10,7 @@ export interface ConfirmModalProps {
 	confirmLabel?: string;
 	cancelLabel?: string;
 	onConfirm: () => void;
+	confirmVariant?: "primary" | "secondary" | "danger";
 	onCancel: () => void;
 	icon?: keyof typeof import("@expo/vector-icons").MaterialIcons.glyphMap;
 	iconColor?: string;
@@ -25,6 +26,7 @@ export function ConfirmModal({
 	onCancel,
 	icon,
 	iconColor,
+	confirmVariant,
 }: ConfirmModalProps) {
 	return (
 		<CenterModal
@@ -42,7 +44,7 @@ export function ConfirmModal({
 				/>
 				<CustomButton
 					onPress={onConfirm}
-					variant="danger"
+					variant={confirmVariant ?? "danger"}
 					title={confirmLabel}
 				/>
 			</View>

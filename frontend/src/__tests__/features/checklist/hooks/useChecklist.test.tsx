@@ -136,16 +136,15 @@ describe("useChecklist", () => {
 		expect(result.current.goals).toHaveLength(0);
 	});
 
-	it("handleAdvanceDay atualiza dayData", async () => {
+	it("handleAdvanceDay desmarca todos os itens", async () => {
 		jest.spyOn(api, "fetchDayData").mockResolvedValue({
 			day: "2026-07-22",
-			items: [],
+			items: [
+				{ id: 1, title: "Task 1", completed: true, day: "2026-07-22" },
+				{ id: 2, title: "Task 2", completed: false, day: "2026-07-22" },
+			],
 		});
 		jest.spyOn(api, "fetchGoals").mockResolvedValue([]);
-		jest.spyOn(api, "advanceDay").mockResolvedValue({
-			day: "2026-07-23",
-			items: [],
-		});
 
 		const { result } = renderHook(() => useChecklist());
 		await waitFor(() => expect(result.current.loading).toBe(false));
@@ -153,6 +152,9 @@ describe("useChecklist", () => {
 		await act(async () => {
 			await result.current.handleAdvanceDay();
 		});
-		expect(result.current.dayData?.day).toBe("2026-07-23");
+		expect(result.current.dayData?.day).toBe("2026-07-22");
+		expect(
+			result.current.dayData?.items.every((i) => i.completed === false),
+		).toBe(true);
 	});
 });

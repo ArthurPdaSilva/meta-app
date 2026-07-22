@@ -34,6 +34,6 @@ describe("ChecklistContainer", () => {
 		const { getByText, findByText } = render(<ChecklistContainer />);
 		expect(await findByText(/Nenhum item ainda/)).toBeTruthy();
 		expect(getByText("Nova Meta")).toBeTruthy();
-		expect(getByText("Avançar Dia")).toBeTruthy();
+		expect(getByText("Concluir por hoje")).toBeTruthy();
 	});
 });
