@@ -1,0 +1,24 @@
+{
+  "expo": {
+    "name": "Meta App",
+    "slug": "meta-app",
+    "version": "0.1.0",
+    "orientation": "portrait",
+    "scheme": "meta-app",
+    "userInterfaceStyle": "light",
+    "newArchEnabled": true,
+    "ios": {
+      "supportsTablet": true,
+      "bundleIdentifier": "com.metaapp.app"
+    },
+    "android": {
+      "adaptiveIcon": {
+        "backgroundColor": "#ffffff"
+      },
+      "package": "com.metaapp.app"
+    },
+    "plugins": [
+      "expo-router"
+    ]
+  }
+}

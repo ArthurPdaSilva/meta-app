@@ -1,0 +1,101 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  backend:
+    name: Backend
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: backend
+
+    outputs:
+      result: ${{ steps.summary.outputs.result }}
+
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 11
+
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm typecheck
+      - run: pnpm vitest run --reporter=json --outputFile=test-results.json
+
+      - name: Backend summary
+        id: summary
+        if: always()
+        run: |
+          total=$(jq '.totalTests // 0' test-results.json 2>/dev/null || echo 0)
+          passed=$(jq '.numPassedTests // 0' test-results.json 2>/dev/null || echo 0)
+          failed=$(jq '.numFailedTests // 0' test-results.json 2>/dev/null || echo 0)
+          echo "result={\"total\":$total,\"passed\":$passed,\"failed\":$failed}" >> $GITHUB_OUTPUT
+
+  frontend:
+    name: Frontend
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: frontend
+
+    outputs:
+      result: ${{ steps.summary.outputs.result }}
+
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 11
+
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm typecheck
+      - run: pnpm biome ci src/
+      - run: pnpm jest --json --outputFile=test-results.json
+
+      - name: Frontend summary
+        id: summary
+        if: always()
+        run: |
+          total=$(jq '.numTotalTests // 0' test-results.json 2>/dev/null || echo 0)
+          passed=$(jq '.numPassedTests // 0' test-results.json 2>/dev/null || echo 0)
+          failed=$(jq '.numFailedTests // 0' test-results.json 2>/dev/null || echo 0)
+          echo "result={\"total\":$total,\"passed\":$passed,\"failed\":$failed}" >> $GITHUB_OUTPUT
+
+  summary:
+    needs: [backend, frontend]
+    if: always()
+    runs-on: ubuntu-latest
+    steps:
+      - run: |
+          BACKEND='${{ needs.backend.outputs.result }}'
+          FRONTEND='${{ needs.frontend.outputs.result }}'
+
+          echo "# Test Summary" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "| Job | Status | Total | Passed | Failed |" >> $GITHUB_STEP_SUMMARY
+          echo "|-----|--------|-------|--------|--------|" >> $GITHUB_STEP_SUMMARY
+
+          be_total=$(echo "$BACKEND" | jq -r '.total // 0')
+          be_passed=$(echo "$BACKEND" | jq -r '.passed // 0')
+          be_failed=$(echo "$BACKEND" | jq -r '.failed // 0')
+          if [ "$be_failed" -gt 0 ]; then be_status="❌"; else be_status="✅"; fi
+          echo "| Backend | $be_status | $be_total | $be_passed | $be_failed |" >> $GITHUB_STEP_SUMMARY
+
+          fe_total=$(echo "$FRONTEND" | jq -r '.total // 0')
+          fe_passed=$(echo "$FRONTEND" | jq -r '.passed // 0')
+          fe_failed=$(echo "$FRONTEND" | jq -r '.failed // 0')
+          if [ "$fe_failed" -gt 0 ]; then fe_status="❌"; else fe_status="✅"; fi
+          echo "| Frontend | $fe_status | $fe_total | $fe_passed | $fe_failed |" >> $GITHUB_STEP_SUMMARY
