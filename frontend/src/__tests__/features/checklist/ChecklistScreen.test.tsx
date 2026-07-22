@@ -100,4 +100,54 @@ describe("ChecklistScreen", () => {
 		fireEvent.press(getByText("Avançar"));
 		expect(onAdvanceDay).toHaveBeenCalled();
 	});
+
+	describe("metas", () => {
+		it("renderiza secao Minhas Metas quando ha goals", () => {
+			const { getByText } = render(
+				<ChecklistScreen
+					{...createProps({
+						goals: [
+							{ id: 1, title: "Exercitar" },
+							{ id: 2, title: "Ler" },
+						],
+					})}
+				/>,
+			);
+			expect(getByText("Minhas Metas")).toBeTruthy();
+			expect(getByText("Exercitar")).toBeTruthy();
+			expect(getByText("Ler")).toBeTruthy();
+		});
+
+		it("nao renderiza secao Minhas Metas quando sem goals", () => {
+			const { queryByText } = render(<ChecklistScreen {...createProps()} />);
+			expect(queryByText("Minhas Metas")).toBeNull();
+		});
+
+		it("abre modal de confirmacao ao clicar em deletar meta", () => {
+			const { getByText, getByTestId } = render(
+				<ChecklistScreen
+					{...createProps({
+						goals: [{ id: 1, title: "Exercitar" }],
+					})}
+				/>,
+			);
+			fireEvent.press(getByTestId("delete-goal-1"));
+			expect(getByText("Remover meta")).toBeTruthy();
+		});
+
+		it("chama onDeleteGoal ao confirmar remocao", () => {
+			const onDeleteGoal = jest.fn();
+			const { getByText, getByTestId } = render(
+				<ChecklistScreen
+					{...createProps({
+						goals: [{ id: 1, title: "Exercitar" }],
+						onDeleteGoal,
+					})}
+				/>,
+			);
+			fireEvent.press(getByTestId("delete-goal-1"));
+			fireEvent.press(getByText("Remover"));
+			expect(onDeleteGoal).toHaveBeenCalledWith(1);
+		});
+	});
 });

@@ -34,6 +34,7 @@ export interface ChecklistScreenProps {
 
 export function ChecklistScreen({
 	dayData,
+	goals,
 	totalItems,
 	completedItems,
 	progressPercentage,
@@ -41,6 +42,7 @@ export function ChecklistScreen({
 	onToggleItem,
 	onRemoveItem,
 	onCreateGoal,
+	onDeleteGoal,
 	onAdvanceDay,
 	onLogout,
 }: ChecklistScreenProps) {
@@ -48,6 +50,7 @@ export function ChecklistScreen({
 	const [newGoalText, setNewGoalText] = useState("");
 	const [showGoalInput, setShowGoalInput] = useState(false);
 	const [removingId, setRemovingId] = useState<number | null>(null);
+	const [deletingGoalId, setDeletingGoalId] = useState<number | null>(null);
 	const [showAdvanceConfirm, setShowAdvanceConfirm] = useState(false);
 
 	const handleAdd = () => {
@@ -69,6 +72,12 @@ export function ChecklistScreen({
 		if (removingId === null) return;
 		await onRemoveItem(removingId);
 		setRemovingId(null);
+	};
+
+	const handleConfirmDeleteGoal = async () => {
+		if (deletingGoalId === null) return;
+		await onDeleteGoal(deletingGoalId);
+		setDeletingGoalId(null);
 	};
 
 	const formattedDay = dayData?.day
@@ -164,26 +173,53 @@ export function ChecklistScreen({
 				)}
 			/>
 
+			{goals.length > 0 ? (
+				<View style={styles.goalsSection}>
+					<Text style={styles.goalsTitle}>Minhas Metas</Text>
+					{goals.map((goal) => (
+						<View key={goal.id} style={styles.goalRow}>
+							<MaterialCommunityIcons
+								name="flag-outline"
+								size={18}
+								color={colors.primary}
+							/>
+							<Text style={styles.goalText}>{goal.title}</Text>
+							<TouchableOpacity
+								testID={`delete-goal-${goal.id}`}
+								onPress={() => setDeletingGoalId(goal.id)}>
+								<MaterialCommunityIcons
+									name="delete-outline"
+									size={18}
+									color={colors.error}
+								/>
+							</TouchableOpacity>
+						</View>
+					))}
+				</View>
+			) : null}
+
 			<View style={styles.footer}>
 				{showGoalInput ? (
-					<View style={styles.goalInputRow}>
+					<View style={styles.goalInputColumn}>
 						<TextInput
-							style={[styles.input, { flex: 1 }]}
+							style={styles.input}
 							value={newGoalText}
 							onChangeText={setNewGoalText}
 							placeholder="Nome da nova meta..."
 							placeholderTextColor={colors.textSecondary}
 						/>
-						<CustomButton
-							title="Criar"
-							onPress={handleCreateGoal}
-							disabled={!newGoalText.trim()}
-						/>
-						<CustomButton
-							title="Cancelar"
-							variant="secondary"
-							onPress={() => setShowGoalInput(false)}
-						/>
+						<View style={styles.goalButtonRow}>
+							<CustomButton
+								title="Criar"
+								onPress={handleCreateGoal}
+								disabled={!newGoalText.trim()}
+							/>
+							<CustomButton
+								title="Cancelar"
+								variant="secondary"
+								onPress={() => setShowGoalInput(false)}
+							/>
+						</View>
 					</View>
 				) : (
 					<View style={styles.footerButtons}>
@@ -209,6 +245,15 @@ export function ChecklistScreen({
 				cancelLabel="Cancelar"
 				onConfirm={handleConfirmRemove}
 				onCancel={() => setRemovingId(null)}
+			/>
+			<ConfirmModal
+				visible={deletingGoalId !== null}
+				title="Remover meta"
+				message="Tem certeza que deseja remover esta meta?"
+				confirmLabel="Remover"
+				cancelLabel="Cancelar"
+				onConfirm={handleConfirmDeleteGoal}
+				onCancel={() => setDeletingGoalId(null)}
 			/>
 			<ConfirmModal
 				visible={showAdvanceConfirm}
@@ -326,6 +371,31 @@ const styles = StyleSheet.create({
 		textDecorationLine: "line-through",
 		color: colors.textSecondary,
 	},
+	goalsSection: {
+		backgroundColor: colors.surface,
+		paddingHorizontal: spacing.lg,
+		paddingVertical: spacing.md,
+		borderTopWidth: 1,
+		borderTopColor: colors.border,
+	},
+	goalsTitle: {
+		fontSize: fontSize.sm,
+		fontWeight: "700",
+		color: colors.textSecondary,
+		textTransform: "uppercase",
+		marginBottom: spacing.sm,
+	},
+	goalRow: {
+		flexDirection: "row",
+		alignItems: "center",
+		gap: spacing.sm,
+		paddingVertical: spacing.xs,
+	},
+	goalText: {
+		flex: 1,
+		fontSize: fontSize.md,
+		color: colors.text,
+	},
 	footer: {
 		padding: spacing.lg,
 		backgroundColor: colors.surface,
@@ -336,7 +406,11 @@ const styles = StyleSheet.create({
 		flexDirection: "row",
 		gap: spacing.sm,
 	},
-	goalInputRow: {
+	goalInputColumn: {
+		gap: spacing.md,
+	},
+	goalButtonRow: {
+		flexDirection: "row",
 		gap: spacing.sm,
 	},
 });

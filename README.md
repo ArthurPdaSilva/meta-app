@@ -117,7 +117,7 @@ O backend usa SQLite em memória por padrão (via `better-sqlite3`). Nenhuma con
 cd backend
 pnpm test
 
-# Frontend (Jest + React Native Testing Library) — 15 suites, 75 testes
+# Frontend (Jest + React Native Testing Library) — 15 suites, 79 testes
 cd frontend
 pnpm test
 ```

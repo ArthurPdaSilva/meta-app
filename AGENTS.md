@@ -186,7 +186,7 @@ CREATE TABLE checklist_items (
 - Sempre usar `pnpm install`, `pnpm add`, `pnpm remove` — nunca `npm`
 - Lockfile: `pnpm-lock.yaml`
 
-### Frontend (Jest + React Native Testing Library) — 15 suites, 75 testes
+### Frontend (Jest + React Native Testing Library) — 15 suites, 79 testes
 - `jest-expo` preset · Jest 29 (v30 é incompatível com `@react-native/jest-preset`)
 - `render` e queries são **assíncronos** (`@testing-library/react-native` v14)
 - Stores resetadas com `useXStore.setState()` no `beforeEach`
