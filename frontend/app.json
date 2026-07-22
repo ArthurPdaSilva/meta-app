@@ -1,24 +1,37 @@
 {
-  "expo": {
-    "name": "Meta App",
-    "slug": "meta-app",
-    "version": "0.1.0",
-    "orientation": "portrait",
-    "scheme": "meta-app",
-    "userInterfaceStyle": "light",
-    "newArchEnabled": true,
-    "ios": {
-      "supportsTablet": true,
-      "bundleIdentifier": "com.metaapp.app"
-    },
-    "android": {
-      "adaptiveIcon": {
-        "backgroundColor": "#ffffff"
-      },
-      "package": "com.metaapp.app"
-    },
-    "plugins": [
-      "expo-router"
-    ]
-  }
+	"expo": {
+		"name": "Meta App",
+		"slug": "meta-app",
+		"version": "1.0.0",
+		"orientation": "portrait",
+		"icon": "./assets/icon.png",
+		"userInterfaceStyle": "light",
+		"splash": {
+			"image": "./assets/splash.png",
+			"resizeMode": "contain",
+			"backgroundColor": "#F9FAFB"
+		},
+		"assetBundlePatterns": ["**/*"],
+		"ios": {
+			"supportsTablet": true,
+			"bundleIdentifier": "com.metaapp"
+		},
+		"android": {
+			"adaptiveIcon": {
+				"foregroundImage": "./assets/adaptive-icon.png",
+				"backgroundColor": "#F9FAFB"
+			},
+			"package": "com.metaapp"
+		},
+		"web": {
+			"favicon": "./assets/favicon.png",
+			"bundler": "metro"
+		},
+		"plugins": ["expo-router"],
+		"scheme": "meta-app",
+		"newArchEnabled": true,
+		"experiments": {
+			"typedRoutes": true
+		}
+	}
 }

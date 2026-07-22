@@ -193,7 +193,7 @@ features/checklist/
 - **Navegação**: Expo Router (file-based routing)
 - **Tooling**: Biome (Linting & Formatting)
 - **Gerenciamento de Pacotes**: pnpm
-- **Testes**: Jest 29 + React Native Testing Library 14
+- **Testes**: Jest 29 + React Native Testing Library 12
 - **Design System**: Tokens centralizados em `styles/tokens.ts`
 
 ### Backend

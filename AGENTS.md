@@ -30,7 +30,7 @@ backend/           # API NestJS + PostgreSQL
 - **Named exports exclusivamente** — sem `export default`
 - **PascalCase**: componentes, screens, stores, arquivos de rota
 - **camelCase**: utilitários, schemas, variáveis, funções
-- **Alias `@/`** mapeando `src/` no frontend (`import { X } from "@/shared/X"`)
+- **Alias `@/`** mapeando `src/` no frontend via `babel-plugin-module-resolver` no `babel.config.js` + `resolver.alias` no `metro.config.js`
 - **Indentação**: tab · **Aspas**: duplas (Biome)
 - **Idioma**: português brasileiro em toda UI, mensagens de validação, placeholders
 - **Nomes de variáveis, funções e parâmetros em inglês** — português apenas em strings de UI
