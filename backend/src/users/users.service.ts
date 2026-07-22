@@ -1,5 +1,5 @@
 import { Inject, Injectable } from "@nestjs/common";
-import type { Pool } from "pg";
+import type { SQLitePool } from "../database.provider";
 
 export interface User {
 	id: number;
@@ -11,29 +11,29 @@ export interface User {
 
 @Injectable()
 export class UsersService {
-	constructor(@Inject("DB_POOL") private readonly pool: Pool) {}
+	constructor(@Inject("DB_POOL") private readonly pool: SQLitePool) {}
 
 	async findByEmail(email: string): Promise<User | null> {
 		const result = await this.pool.query(
-			"SELECT * FROM users WHERE email = $1",
+			"SELECT * FROM users WHERE email = ?",
 			[email],
 		);
-		return result.rows[0] ?? null;
+		return (result.rows[0] as User) ?? null;
 	}
 
 	async findById(id: number): Promise<Omit<User, "password"> | null> {
 		const result = await this.pool.query(
-			'SELECT id, email, name, "createdAt" FROM users WHERE id = $1',
+			'SELECT id, email, name, "createdAt" FROM users WHERE id = ?',
 			[id],
 		);
-		return result.rows[0] ?? null;
+		return (result.rows[0] as Omit<User, "password">) ?? null;
 	}
 
 	async create(email: string, password: string, name: string): Promise<User> {
 		const result = await this.pool.query(
-			"INSERT INTO users (email, password, name) VALUES ($1, $2, $3) RETURNING *",
+			"INSERT INTO users (email, password, name) VALUES (?, ?, ?) RETURNING *",
 			[email, password, name],
 		);
-		return result.rows[0];
+		return result.rows[0] as User;
 	}
 }

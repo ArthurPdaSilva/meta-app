@@ -10,14 +10,19 @@ App React Native (Expo) com backend NestJS para acompanhamento de metas e checkl
 │   ├── package.json
 │   ├── app.json
 │   └── ...
-├── backend/           # API NestJS + PostgreSQL
+├── backend/           # API NestJS + SQLite
 │   ├── src/
 │   │   ├── auth/
 │   │   ├── users/
+│   │   ├── goals/
+│   │   ├── checklist/
 │   │   ├── app.module.ts
 │   │   └── main.ts
 │   ├── package.json
 │   └── ...
+├── .github/
+│   └── workflows/
+│       └── ci.yml     # CI/CD pipeline
 ├── README.md
 └── .gitignore
 ```
@@ -63,6 +68,7 @@ features/auth/
 |------------|-----------|
 | `CustomButton` | Botão com variantes `primary`, `secondary`, `danger`, suporte a `loading` e `disabled` |
 | `FormInput` | Input com label, placeholder, `secureTextEntry` e exibição de erro |
+| `ControlledFormInput` | Wrapper que integra `FormInput` com React Hook Form (`Controller`) |
 | `ConfirmModal` | Modal de confirmação com dois botões para ações destrutivas |
 
 ### Tela de Checklist
@@ -84,6 +90,9 @@ pnpm install
 pnpm start          # Expo Go
 # ou
 pnpm android        # Emulador Android
+pnpm test           # Testes
+pnpm typecheck      # TypeScript
+pnpm biome:check    # Lint + formatação
 ```
 
 ### Backend
@@ -93,18 +102,21 @@ cd backend
 pnpm install
 pnpm dev            # Desenvolvimento com hot reload
 pnpm start          # Produção
+pnpm test           # Testes
+pnpm typecheck      # TypeScript
+pnpm lint           # Lint + formatação
 ```
 
-O backend usa PostgreSQL. A variável `DATABASE_URL` (connection string) é obrigatória.
+O backend usa SQLite em memória por padrão (via `better-sqlite3`). Nenhuma configuração de banco é necessária para desenvolvimento.
 
 ## Testes
 
 ```bash
-# Backend (Vitest) — 3 suites, 9 testes
+# Backend (Vitest) — 5 suites, 26 testes
 cd backend
 pnpm test
 
-# Frontend (Jest + React Native Testing Library) — 6 suites, 24 testes
+# Frontend (Jest + React Native Testing Library) — 14 suites, 69 testes
 cd frontend
 pnpm test
 ```
@@ -116,17 +128,50 @@ Os testes espelham a estrutura de `src/` usando imports **relativos**:
 | Source | Teste |
 |--------|-------|
 | `shared/CustomButton.tsx` | `__tests__/shared/CustomButton.test.tsx` |
+| `shared/FormInput.tsx` | `__tests__/shared/FormInput.test.tsx` |
+| `shared/ConfirmModal.tsx` | `__tests__/shared/ConfirmModal.test.tsx` |
 | `stores/authStore.ts` | `__tests__/features/auth/stores/authStore.test.ts` |
 | `features/auth/schemas/authSchemas.ts` | `__tests__/features/auth/schemas/authSchemas.test.ts` |
 | `features/auth/services/authApi.ts` | `__tests__/features/auth/services/authApi.test.ts` |
+| `features/auth/hooks/useAuth.ts` | `__tests__/features/auth/hooks/useAuth.test.tsx` |
+| `features/auth/AuthContainer.tsx` | `__tests__/features/auth/AuthContainer.test.tsx` |
+| `features/auth/AuthScreen.tsx` | `__tests__/features/auth/AuthScreen.test.tsx` |
 | `features/checklist/hooks/useDayProgress.ts` | `__tests__/features/checklist/hooks/useDayProgress.test.ts` |
+| `features/checklist/hooks/useChecklist.ts` | `__tests__/features/checklist/hooks/useChecklist.test.tsx` |
 | `features/checklist/services/checklistApi.ts` | `__tests__/features/checklist/services/checklistApi.test.ts` |
+| `features/checklist/ChecklistContainer.tsx` | `__tests__/features/checklist/ChecklistContainer.test.tsx` |
+| `features/checklist/ChecklistScreen.tsx` | `__tests__/features/checklist/ChecklistScreen.test.tsx` |
+
+### Backend — Estrutura de Testes
+
+Os testes usam `@nestjs/testing` + `supertest` ou testes de serviço diretos:
+
+| Source | Teste |
+|--------|-------|
+| `health.controller.ts` | `health.test.ts` |
+| `auth/auth.service.ts` | `auth/auth.test.ts` |
+| `users/users.service.ts` | `users/users.service.test.ts` |
+| `goals/goals.service.ts` | `goals/goals.test.ts` |
+| `checklist/checklist.service.ts` | `checklist/checklist.test.ts` |
+
+- Banco `:memory:` compartilhado via `test/helper.ts` (`getDb()` / `resetDb()`)
+- Providers manuais com `{ provide: "DB_POOL", useFactory: getDb }`
 
 - Stores são resetadas com `use[Nome]Store.setState({})` no `beforeEach`
 - Chamadas HTTP mockadas com `jest.fn()` em `global.fetch`
 - AsyncStorage mockado globalmente em `jest.setup.js`
+## CI/CD
+
+O projeto possui pipeline CI definido em `.github/workflows/ci.yml` com três jobs paralelos:
+
+| Job | Passos |
+|-----|--------|
+| **Backend** | `pnpm install` → `typecheck` → `vitest` |
+| **Frontend** | `pnpm install` → `typecheck` → `biome ci` → `jest` |
+| **summary** | Consolida resultados de ambos em tabela |
 
 ## Variáveis de Ambiente
+
 
 ### Frontend (`frontend/.env`)
 
@@ -139,7 +184,6 @@ Os testes espelham a estrutura de `src/` usando imports **relativos**:
 | Variável | Descrição |
 |----------|-----------|
 | `PORT` | Porta do servidor (default: 3001) |
-| `DATABASE_URL` | Connection string do PostgreSQL |
 | `JWT_SECRET` | Chave secreta para JWT |
 
 ## Arquitetura Frontend (Camadas)
@@ -189,7 +233,7 @@ features/checklist/
 - **Linguagem**: TypeScript 5.9
 - **Importação**: Path alias `@/` apontando para `src/`
 - **Gerenciamento de Estado**: Zustand + Persist Middleware
-- **Formulários**: React Hook Form + Zod
+- **Formulários**: React Hook Form + Zod + `@hookform/resolvers`
 - **Navegação**: Expo Router (file-based routing)
 - **Tooling**: Biome (Linting & Formatting)
 - **Gerenciamento de Pacotes**: pnpm
@@ -200,9 +244,9 @@ features/checklist/
 - **Runtime**: Node.js + TypeScript
 - **Framework**: NestJS
 - **Gerenciamento de Pacotes**: pnpm
-- **Banco**: PostgreSQL (pg)
+- **Banco**: SQLite (better-sqlite3)
 - **Auth**: JWT (bcrypt + jsonwebtoken)
-- **Testes**: Vitest + Supertest (pg-mem para banco in-memory)
+- **Testes**: Vitest + Supertest (SQLite em memória)
 
 ## Estrutura do Frontend
 
@@ -214,6 +258,7 @@ frontend/src/
   shared/                 # Componentes compartilhados de UI
     CustomButton.tsx      # Botão reutilizável (primary/secondary/danger)
     FormInput.tsx         # Input de formulário com label e erro
+    ControlledFormInput.tsx  # Wrapper FormInput + React Hook Form
     ConfirmModal.tsx      # Modal de confirmação
   features/               # Módulos por domínio
     auth/
@@ -243,12 +288,20 @@ frontend/src/
   __tests__/             # Testes espelhando a estrutura source
     shared/
       CustomButton.test.tsx
+      FormInput.test.tsx
+      ConfirmModal.test.tsx
     features/
       auth/
+        AuthContainer.test.tsx
+        AuthScreen.test.tsx
         stores/authStore.test.ts
         schemas/authSchemas.test.ts
         services/authApi.test.ts
+        hooks/useAuth.test.tsx
       checklist/
+        ChecklistContainer.test.tsx
+        ChecklistScreen.test.tsx
+        hooks/useChecklist.test.tsx
         hooks/useDayProgress.test.ts
         services/checklistApi.test.ts
 ```
@@ -260,16 +313,47 @@ frontend/src/
 | POST | `/auth/register` | — | Registrar novo usuário |
 | POST | `/auth/login` | — | Login do usuário |
 | GET | `/health` | — | Health check |
+| GET | `/goals` | JWT | Listar metas |
+| POST | `/goals` | JWT | Criar meta |
+| DELETE | `/goals/:id` | JWT | Remover meta |
+| GET | `/checklist?day=` | JWT | Listar itens do dia |
+| POST | `/checklist` | JWT | Adicionar item |
+| PATCH | `/checklist/:id` | JWT | Alternar item |
+| DELETE | `/checklist/:id` | JWT | Remover item |
+| POST | `/checklist/advance-day` | JWT | Avançar dia |
 
 ## Schema do Banco
 
+O backend usa SQLite em memória com `better-sqlite3`. A função `now()` é registrada para retornar ISO string.
+
 ```sql
 CREATE TABLE users (
-  id          SERIAL PRIMARY KEY,
+  id          INTEGER PRIMARY KEY AUTOINCREMENT,
   email       TEXT UNIQUE NOT NULL,
   password    TEXT NOT NULL,
   name        TEXT NOT NULL,
-  createdAt   TEXT DEFAULT NOW()
+  "createdAt" TEXT DEFAULT NOW()
+);
+
+CREATE TABLE goals (
+  id          INTEGER PRIMARY KEY AUTOINCREMENT,
+  user_id     INTEGER NOT NULL,
+  title       TEXT NOT NULL,
+  description TEXT,
+  "createdAt" TEXT DEFAULT NOW(),
+  FOREIGN KEY (user_id) REFERENCES users(id)
+);
+
+CREATE TABLE checklist_items (
+  id          INTEGER PRIMARY KEY AUTOINCREMENT,
+  user_id     INTEGER NOT NULL,
+  day         TEXT NOT NULL,
+  title       TEXT NOT NULL,
+  goal_id     INTEGER,
+  completed   INTEGER DEFAULT 0,
+  "createdAt" TEXT DEFAULT NOW(),
+  FOREIGN KEY (user_id) REFERENCES users(id),
+  FOREIGN KEY (goal_id) REFERENCES goals(id)
 );
 ```
 

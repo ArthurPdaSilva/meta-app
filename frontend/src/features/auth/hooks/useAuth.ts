@@ -1,7 +1,18 @@
+import { zodResolver } from "@hookform/resolvers/zod";
 import { useRouter } from "expo-router";
-import { useState } from "react";
+import { useCallback, useMemo, useState } from "react";
+import type { Resolver } from "react-hook-form";
+import { useForm } from "react-hook-form";
 import { useAuthStore } from "@/stores/authStore";
+import { loginSchema, registerSchema } from "../schemas/authSchemas";
 import { loginRequest, registerRequest } from "../services/authApi";
+
+export interface FormData {
+	email: string;
+	password: string;
+	name: string;
+	confirmPassword: string;
+}
 
 export function useAuth() {
 	const [mode, setMode] = useState<"login" | "register">("login");
@@ -9,39 +20,52 @@ export function useAuth() {
 	const [loading, setLoading] = useState(false);
 	const setAuth = useAuthStore((s) => s.setAuth);
 	const router = useRouter();
+	const isLogin = mode === "login";
 
-	async function handleSubmit(data: {
-		email: string;
-		password: string;
-		name?: string;
-	}) {
-		setError(null);
-		setLoading(true);
-		try {
-			const name = data.name ?? "";
-			const result =
-				mode === "login"
+	const resolver = useMemo<Resolver<FormData>>(
+		() =>
+			(isLogin
+				? zodResolver(loginSchema)
+				: zodResolver(registerSchema)) as Resolver<FormData>,
+		[isLogin],
+	);
+
+	const { control, handleSubmit, reset } = useForm<FormData>({
+		resolver,
+		defaultValues: { email: "", password: "", name: "", confirmPassword: "" },
+	});
+
+	const onSubmit = useCallback(
+		async (data: FormData) => {
+			setError(null);
+			setLoading(true);
+			try {
+				const result = isLogin
 					? await loginRequest(data.email, data.password)
-					: await registerRequest(data.email, data.password, name);
-			setAuth(result.token, result.user);
-			router.replace("/");
-		} catch (err) {
-			setError(err instanceof Error ? err.message : "Erro inesperado");
-		} finally {
-			setLoading(false);
-		}
-	}
+					: await registerRequest(data.email, data.password, data.name);
+				setAuth(result.token, result.user);
+				router.replace("/");
+			} catch (err) {
+				setError(err instanceof Error ? err.message : "Erro inesperado");
+			} finally {
+				setLoading(false);
+			}
+		},
+		[isLogin, setAuth, router],
+	);
 
 	function toggleMode() {
 		setMode((m) => (m === "login" ? "register" : "login"));
 		setError(null);
+		reset();
 	}
 
 	return {
 		mode,
 		error,
 		loading,
-		handleSubmit,
+		control,
+		onSubmit: handleSubmit(onSubmit),
 		toggleMode,
 	};
 }

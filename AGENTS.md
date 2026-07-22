@@ -12,15 +12,18 @@ frontend/          # App React Native (Expo)
     app/           # Expo Router (file-based routing)
     shared/        # Componentes compartilhados de UI
     features/      # Módulos por domínio (checklist/, auth/, …)
+    stores/        # Zustand stores (authStore)
     styles/        # Design tokens (tokens.ts)
     utils/         # Utilitários globais
     lib/           # Wrappers de bibliotecas
     types.ts       # Tipos e constantes de negócio
 
-backend/           # API NestJS + PostgreSQL
+backend/           # API NestJS + SQLite (better-sqlite3)
   src/
     auth/          # Módulo de autenticação
     users/         # Módulo de usuários
+    goals/         # Módulo de metas (CRUD)
+    checklist/     # Módulo de checklist diário
     app.module.ts  # Módulo raiz
     main.ts        # Entry point
 ```
@@ -115,26 +118,61 @@ features/auth/
 ### Checklist / Metas
 - Tela principal exibe o dia atual e as metas do usuário
 - Checklist com itens que podem ser marcados como concluídos
-- Botão "Avançar Dia" limpa o checklist e incrementa o contador de dias
+- Botão "Avançar Dia" limpa o checklist e retorna o dia seguinte
 - Metas são persistentes (não somem ao avançar dia)
 - Itens do checklist são específicos de cada dia
+- `useChecklist` hook gerencia estado local (dayData, goals, loading) e expõe handlers (add, toggle, remove, createGoal, deleteGoal, advanceDay)
+- `useDayProgress` hook calcula total, completed e percentage a partir dos itens
+
+```
+features/checklist/
+  ChecklistContainer.tsx
+  ChecklistScreen.tsx
+  hooks/
+    useChecklist.ts
+    useDayProgress.ts
+  services/
+    checklistApi.ts
+```
 
 ### Backend
-- Módulo NestJS por domínio (auth, users, …)
-- PostgreSQL com `pg` (pg-mem para testes)
-- Testes usam `:memory:`
-- Sistema de autenticação simples (registro + login)
+- Módulo NestJS por domínio (auth, users, goals, checklist)
+- SQLite com `better-sqlite3` (em memória para dev/testes)
+- `SQLitePool` wrapper com método `query()` que detecta SELECT/RETURNING vs mutações
+- `DatabaseProvider` token `"DB_POOL"` — exportado por `UsersModule` para ser injetado em goals/checklist
+- Autenticação JWT via Passport (`JwtAuthGuard`, `JwtStrategy`)
+- `UsersModule` exporta `UsersService` e `DatabaseProvider` para módulos que dependem de `DB_POOL`
 
 ### Banco de Dados
 
 ```sql
--- Tabela de usuários
 CREATE TABLE users (
-  id          SERIAL PRIMARY KEY,
+  id          INTEGER PRIMARY KEY AUTOINCREMENT,
   email       TEXT UNIQUE NOT NULL,
   password    TEXT NOT NULL,
   name        TEXT NOT NULL,
-  createdAt   TEXT DEFAULT NOW()
+  "createdAt" TEXT DEFAULT (NOW())
+);
+
+CREATE TABLE goals (
+  id          INTEGER PRIMARY KEY AUTOINCREMENT,
+  user_id     INTEGER NOT NULL,
+  title       TEXT NOT NULL,
+  description TEXT,
+  "createdAt" TEXT DEFAULT (NOW()),
+  FOREIGN KEY (user_id) REFERENCES users(id)
+);
+
+CREATE TABLE checklist_items (
+  id          INTEGER PRIMARY KEY AUTOINCREMENT,
+  user_id     INTEGER NOT NULL,
+  day         TEXT NOT NULL,
+  title       TEXT NOT NULL,
+  goal_id     INTEGER,
+  completed   INTEGER DEFAULT 0,
+  "createdAt" TEXT DEFAULT (NOW()),
+  FOREIGN KEY (user_id) REFERENCES users(id),
+  FOREIGN KEY (goal_id) REFERENCES goals(id)
 );
 ```
 
@@ -146,20 +184,23 @@ CREATE TABLE users (
 - Sempre usar `pnpm install`, `pnpm add`, `pnpm remove` — nunca `npm`
 - Lockfile: `pnpm-lock.yaml`
 
-### Frontend (Jest + React Native Testing Library)
+### Frontend (Jest + React Native Testing Library) — 14 suites, 69 testes
 - `jest-expo` preset · Jest 29 (v30 é incompatível com `@react-native/jest-preset`)
 - `render` e queries são **assíncronos** (`@testing-library/react-native` v14)
 - Stores resetadas com `useXStore.setState()` no `beforeEach`
 - Imports **relativos** nos testes (não usar `@/`)
 - Arquivo: `{SourceName}.test.ts(x)` em `src/__tests__/`
 - **Estrutura espelha a source**: `src/shared/X.tsx` → `src/__tests__/shared/X.test.tsx`, `src/features/X/stores/Y.ts` → `src/__tests__/features/X/stores/Y.test.ts`
-- **Container/Screen**: `src/features/X/Container.ts` → `src/__tests__/features/X/Container.test.ts`
+- **Container/Screen**: `src/features/X/Container.tsx` → `src/__tests__/features/X/Container.test.tsx`
+- **Hooks**: `src/features/X/hooks/Y.ts` → `src/__tests__/features/X/hooks/Y.test.tsx`
+- Testes existentes: CustomButton, FormInput, ConfirmModal, authStore, authSchemas, authApi, useAuth, AuthContainer, AuthScreen, useDayProgress, useChecklist, ChecklistContainer, ChecklistScreen
 
-### Backend (Vitest + Supertest)
+### Backend (Vitest + Supertest) — 5 suites, 26 testes
 - `globals: true`, ambiente `node`
-- `:memory:` pg-mem via `helper.ts`
-- `createApp(db)` para cada suite
-- Testes por módulo NestJS (auth, users, …)
+- `:memory:` `better-sqlite3` via `test/helper.ts`
+- `getDb()` retorna singleton `SQLitePool`; `resetDb()` limpa users, goals e checklist_items
+- Testes por módulo NestJS (health, auth, users, goals, checklist)
+- Testes de serviço com `@nestjs/testing` + providers manuais
 
 ## CI/CD
 

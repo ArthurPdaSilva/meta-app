@@ -1,35 +1,49 @@
-import { newDb, DataType } from "pg-mem";
-import { Pool } from "pg";
+import Database from "better-sqlite3";
+import { SQLitePool } from "../src/database.provider";
 
-const pgMem = newDb();
-
-pgMem.public.registerFunction({
-  name: "now",
-  returns: DataType.timestamptz,
-  implementation: () => new Date().toISOString(),
-});
-
-pgMem.public.none(`
+const db = new Database(":memory:");
+db.pragma("journal_mode = WAL");
+db.function("now", () => new Date().toISOString());
+db.exec(`
   CREATE TABLE users (
-    id          SERIAL PRIMARY KEY,
+    id          INTEGER PRIMARY KEY AUTOINCREMENT,
     email       TEXT UNIQUE NOT NULL,
     password    TEXT NOT NULL,
     name        TEXT NOT NULL,
-    "createdAt" TEXT DEFAULT NOW()
+    "createdAt" TEXT DEFAULT (NOW())
+  );
+  CREATE TABLE goals (
+    id          INTEGER PRIMARY KEY AUTOINCREMENT,
+    user_id     INTEGER NOT NULL,
+    title       TEXT NOT NULL,
+    description TEXT,
+    "createdAt" TEXT DEFAULT (NOW()),
+    FOREIGN KEY (user_id) REFERENCES users(id)
+  );
+  CREATE TABLE checklist_items (
+    id          INTEGER PRIMARY KEY AUTOINCREMENT,
+    user_id     INTEGER NOT NULL,
+    day         TEXT NOT NULL,
+    title       TEXT NOT NULL,
+    goal_id     INTEGER,
+    completed   INTEGER DEFAULT 0,
+    "createdAt" TEXT DEFAULT (NOW()),
+    FOREIGN KEY (user_id) REFERENCES users(id),
+    FOREIGN KEY (goal_id) REFERENCES goals(id)
   );
 `);
 
-const backup = pgMem.backup();
+let pool: SQLitePool | null = null;
 
-let pool: Pool | null = null;
-
-export function getDb(): Pool {
-  if (!pool) {
-    pool = new (pgMem.adapters.createPg().Pool)();
-  }
-  return pool as Pool;
+export function getDb(): SQLitePool {
+	if (!pool) {
+		pool = new SQLitePool(db);
+	}
+	return pool;
 }
 
 export async function resetDb(): Promise<void> {
-  backup.restore();
+	db.exec("DELETE FROM checklist_items");
+	db.exec("DELETE FROM goals");
+	db.exec("DELETE FROM users");
 }

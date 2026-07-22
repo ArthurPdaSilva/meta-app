@@ -1,3 +1,4 @@
+import type { Control, FieldValues } from "react-hook-form";
 import {
 	KeyboardAvoidingView,
 	Platform,
@@ -6,27 +7,16 @@ import {
 	Text,
 	View,
 } from "react-native";
+import { ControlledFormInput } from "@/shared/ControlledFormInput";
 import { CustomButton } from "@/shared/CustomButton";
-import { FormInput } from "@/shared/FormInput";
 import { colors, fontSize, spacing } from "@/styles/tokens";
+import type { FormData } from "./hooks/useAuth";
 
 export interface AuthScreenProps {
 	mode: "login" | "register";
 	error: string | null;
 	loading: boolean;
-	formData: {
-		email: string;
-		password: string;
-		name: string;
-		confirmPassword: string;
-	};
-	formErrors: {
-		email?: string;
-		password?: string;
-		name?: string;
-		confirmPassword?: string;
-	};
-	onFieldChange: (field: string, value: string) => void;
+	control: Control<FormData, FieldValues>;
 	onSubmit: () => void;
 	onToggleMode: () => void;
 }
@@ -35,9 +25,7 @@ export function AuthScreen({
 	mode,
 	error,
 	loading,
-	formData,
-	formErrors,
-	onFieldChange,
+	control,
 	onSubmit,
 	onToggleMode,
 }: AuthScreenProps) {
@@ -63,41 +51,37 @@ export function AuthScreen({
 					{error ? <Text style={styles.errorBanner}>{error}</Text> : null}
 
 					{!isLogin ? (
-						<FormInput
+						<ControlledFormInput
+							control={control}
+							name="name"
 							label="Nome"
-							value={formData.name}
-							onChangeText={(v) => onFieldChange("name", v)}
 							placeholder="Seu nome"
-							error={formErrors.name}
 						/>
 					) : null}
 
-					<FormInput
+					<ControlledFormInput
+						control={control}
+						name="email"
 						label="Email"
-						value={formData.email}
-						onChangeText={(v) => onFieldChange("email", v)}
 						placeholder="seu@email.com"
 						keyboardType="email-address"
-						error={formErrors.email}
 					/>
 
-					<FormInput
+					<ControlledFormInput
+						control={control}
+						name="password"
 						label="Senha"
-						value={formData.password}
-						onChangeText={(v) => onFieldChange("password", v)}
 						placeholder="Mínimo 6 caracteres"
 						secureTextEntry
-						error={formErrors.password}
 					/>
 
 					{!isLogin ? (
-						<FormInput
+						<ControlledFormInput
+							control={control}
+							name="confirmPassword"
 							label="Confirmar Senha"
-							value={formData.confirmPassword}
-							onChangeText={(v) => onFieldChange("confirmPassword", v)}
 							placeholder="Repita a senha"
 							secureTextEntry
-							error={formErrors.confirmPassword}
 						/>
 					) : null}
 
