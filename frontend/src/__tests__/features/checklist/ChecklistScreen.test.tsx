@@ -17,7 +17,7 @@ function createProps(
 		onRemoveItem: jest.fn(),
 		onCreateGoal: jest.fn(),
 		onDeleteGoal: jest.fn(),
-		onAdvanceDay: jest.fn(),
+		onConcludeDay: jest.fn(),
 		onLogout: jest.fn(),
 		...overrides,
 	};
@@ -91,14 +91,14 @@ describe("ChecklistScreen", () => {
 		expect(onCreateGoal).toHaveBeenCalledWith("Exercitar");
 	});
 
-	it("chama onAdvanceDay ao confirmar no modal", () => {
-		const onAdvanceDay = jest.fn();
+	it("chama onConcludeDay ao confirmar no modal", () => {
+		const onConcludeDay = jest.fn();
 		const { getByText } = render(
-			<ChecklistScreen {...createProps({ onAdvanceDay })} />,
+			<ChecklistScreen {...createProps({ onConcludeDay })} />,
 		);
 		fireEvent.press(getByText("Concluir por hoje"));
 		fireEvent.press(getByText("Concluir"));
-		expect(onAdvanceDay).toHaveBeenCalled();
+		expect(onConcludeDay).toHaveBeenCalled();
 	});
 
 	describe("metas", () => {

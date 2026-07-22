@@ -14,7 +14,7 @@ export function ChecklistContainer() {
 		handleRemoveItem,
 		handleCreateGoal,
 		handleDeleteGoal,
-		handleAdvanceDay,
+		handleConcludeDay,
 	} = useChecklist();
 
 	const { total, completed, percentage } = useDayProgress(dayData?.items ?? []);
@@ -39,7 +39,7 @@ export function ChecklistContainer() {
 			onRemoveItem={handleRemoveItem}
 			onCreateGoal={handleCreateGoal}
 			onDeleteGoal={handleDeleteGoal}
-			onAdvanceDay={handleAdvanceDay}
+			onConcludeDay={handleConcludeDay}
 			onLogout={handleLogout}
 		/>
 	);

@@ -106,7 +106,7 @@ export function useChecklist() {
 		}
 	}
 
-	async function handleAdvanceDay() {
+	async function handleConcludeDay() {
 		if (!dayData) return;
 		setDayData({
 			...dayData,
@@ -124,7 +124,7 @@ export function useChecklist() {
 		handleRemoveItem,
 		handleCreateGoal,
 		handleDeleteGoal,
-		handleAdvanceDay,
+		handleConcludeDay,
 		refresh: load,
 	};
 }

@@ -2,7 +2,7 @@
 
 ## Visão Geral
 
-Monorepo de um app React Native (Expo) + backend NestJS para acompanhamento de metas diárias com checklist. O usuário define metas, adiciona itens ao checklist do dia, e avança os dias — ao avançar, o checklist é limpo para o novo dia. UI em português brasileiro.
+Monorepo de um app React Native (Expo) + backend NestJS para acompanhamento de metas diárias com checklist. O usuário define metas, adiciona itens ao checklist do dia, e **conclui o dia** — ao concluir, os itens são **desmarcados** (não apagados) para recomeçar. UI em português brasileiro.
 
 ## Estrutura
 
@@ -120,10 +120,10 @@ features/auth/
 ### Checklist / Metas
 - Tela principal exibe o dia atual e as metas do usuário
 - Checklist com itens que podem ser marcados como concluídos
-- Botão "Concluir por hoje" limpa o checklist e retorna o dia seguinte
+- Botão "Concluir por hoje" **desmarca todos os itens** (não apaga, não avança o dia)
 - Metas são persistentes (não somem ao concluir o dia)
 - Itens do checklist são específicos de cada dia
-- `useChecklist` hook gerencia estado local (dayData, goals, loading) e expõe handlers (add, toggle, remove, createGoal, deleteGoal, advanceDay/concluirDia)
+- `useChecklist` hook gerencia estado local (dayData, goals, loading) e expõe handlers (add, toggle, remove, createGoal, deleteGoal, handleConcludeDay)
 - `useDayProgress` hook calcula total, completed e percentage a partir dos itens
 
 ```

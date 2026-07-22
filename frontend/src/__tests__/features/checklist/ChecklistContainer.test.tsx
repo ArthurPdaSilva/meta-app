@@ -10,7 +10,6 @@ jest.mock("../../../features/checklist/services/checklistApi", () => ({
 	removeItem: jest.fn(),
 	createGoal: jest.fn(),
 	deleteGoal: jest.fn(),
-	advanceDay: jest.fn(),
 }));
 
 describe("ChecklistContainer", () => {

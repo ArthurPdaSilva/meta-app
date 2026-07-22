@@ -136,7 +136,7 @@ describe("useChecklist", () => {
 		expect(result.current.goals).toHaveLength(0);
 	});
 
-	it("handleAdvanceDay desmarca todos os itens", async () => {
+	it("handleConcludeDay desmarca todos os itens", async () => {
 		jest.spyOn(api, "fetchDayData").mockResolvedValue({
 			day: "2026-07-22",
 			items: [
@@ -150,7 +150,7 @@ describe("useChecklist", () => {
 		await waitFor(() => expect(result.current.loading).toBe(false));
 
 		await act(async () => {
-			await result.current.handleAdvanceDay();
+			await result.current.handleConcludeDay();
 		});
 		expect(result.current.dayData?.day).toBe("2026-07-22");
 		expect(

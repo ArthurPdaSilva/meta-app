@@ -33,14 +33,14 @@ O app permite que o usuário gerencie suas metas e checklists diários de forma 
 
 - **Metas**: Metas persistentes definidas pelo usuário
 - **Checklist Diário**: Itens específicos do dia que podem ser marcados como concluídos
-- **Concluir por hoje**: Finaliza o checklist do dia, limpando os itens para o novo dia
+- **Concluir por hoje**: Desmarca todos os itens do checklist (não apaga, não avança o dia)
 - **Autenticação**: Sistema simples de login/registro via backend
 
 ## Principais Funcionalidades
 
 - **Gestão de Metas**: Criar e gerenciar metas persistentes
 - **Checklist Diário**: Adicionar itens ao checklist do dia e marcá-los como concluídos
-- **Concluir por hoje**: Botão para finalizar o checklist do dia, limpando os itens para o novo dia
+- **Concluir por hoje**: Botão para desmarcar todos os itens do checklist (não apaga, não avança o dia)
 - **Autenticação**: Sistema de registro e login com email e senha
 
 ### Fluxo de Autenticação

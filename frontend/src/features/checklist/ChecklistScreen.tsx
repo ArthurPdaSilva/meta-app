@@ -28,7 +28,7 @@ export interface ChecklistScreenProps {
 	onRemoveItem: (id: number) => Promise<void>;
 	onCreateGoal: (title: string) => Promise<void>;
 	onDeleteGoal: (id: number) => Promise<void>;
-	onAdvanceDay: () => Promise<void>;
+	onConcludeDay: () => Promise<void>;
 	onLogout: () => void;
 }
 
@@ -43,7 +43,7 @@ export function ChecklistScreen({
 	onRemoveItem,
 	onCreateGoal,
 	onDeleteGoal,
-	onAdvanceDay,
+	onConcludeDay,
 	onLogout,
 }: ChecklistScreenProps) {
 	const [newItemText, setNewItemText] = useState("");
@@ -266,7 +266,7 @@ export function ChecklistScreen({
 				icon="check-circle"
 				iconColor={colors.success}
 				onConfirm={() => {
-					onAdvanceDay();
+					onConcludeDay();
 					setShowAdvanceConfirm(false);
 				}}
 				onCancel={() => setShowAdvanceConfirm(false)}
