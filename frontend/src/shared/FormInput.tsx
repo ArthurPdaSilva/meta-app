@@ -1,5 +1,7 @@
+import { useMemo } from "react";
 import { StyleSheet, Text, TextInput, View } from "react-native";
-import { borderRadius, colors, fontSize, spacing } from "@/styles/tokens";
+import { useColors } from "@/styles/theme";
+import { borderRadius, fontSize, spacing } from "@/styles/tokens";
 
 export interface FormInputProps {
 	label: string;
@@ -22,6 +24,42 @@ export function FormInput({
 	autoCapitalize = "none",
 	keyboardType = "default",
 }: FormInputProps) {
+	const colors = useColors();
+
+	const styles = useMemo(
+		() =>
+			StyleSheet.create({
+				container: {
+					marginBottom: spacing.md,
+				},
+				label: {
+					fontSize: fontSize.sm,
+					fontWeight: "600",
+					color: colors.text,
+					marginBottom: spacing.xs,
+				},
+				input: {
+					borderWidth: 1,
+					borderColor: colors.border,
+					borderRadius: borderRadius.sm,
+					paddingHorizontal: spacing.md,
+					paddingVertical: spacing.sm + 2,
+					fontSize: fontSize.md,
+					color: colors.text,
+					backgroundColor: colors.surface,
+				},
+				inputError: {
+					borderColor: colors.error,
+				},
+				error: {
+					color: colors.error,
+					fontSize: fontSize.sm,
+					marginTop: spacing.xs,
+				},
+			}),
+		[colors],
+	);
+
 	return (
 		<View style={styles.container}>
 			<Text style={styles.label}>{label}</Text>
@@ -39,33 +77,3 @@ export function FormInput({
 		</View>
 	);
 }
-
-const styles = StyleSheet.create({
-	container: {
-		marginBottom: spacing.md,
-	},
-	label: {
-		fontSize: fontSize.sm,
-		fontWeight: "600",
-		color: colors.text,
-		marginBottom: spacing.xs,
-	},
-	input: {
-		borderWidth: 1,
-		borderColor: colors.border,
-		borderRadius: borderRadius.sm,
-		paddingHorizontal: spacing.md,
-		paddingVertical: spacing.sm + 2,
-		fontSize: fontSize.md,
-		color: colors.text,
-		backgroundColor: colors.surface,
-	},
-	inputError: {
-		borderColor: colors.error,
-	},
-	error: {
-		color: colors.error,
-		fontSize: fontSize.sm,
-		marginTop: spacing.xs,
-	},
-});

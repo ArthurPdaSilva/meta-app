@@ -1,5 +1,5 @@
 import { MaterialCommunityIcons } from "@expo/vector-icons";
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import {
 	FlatList,
 	StyleSheet,
@@ -10,7 +10,8 @@ import {
 } from "react-native";
 import { ConfirmModal } from "@/shared/ConfirmModal";
 import { CustomButton } from "@/shared/CustomButton";
-import { borderRadius, colors, fontSize, spacing } from "@/styles/tokens";
+import { useColors } from "@/styles/theme";
+import { borderRadius, fontSize, spacing } from "@/styles/tokens";
 import type { ChecklistItem, Goal } from "@/types";
 
 export interface ChecklistScreenProps {
@@ -29,7 +30,7 @@ export interface ChecklistScreenProps {
 	onCreateGoal: (title: string) => Promise<void>;
 	onDeleteGoal: (id: number) => Promise<void>;
 	onConcludeDay: () => Promise<void>;
-	onLogout: () => void;
+	onOpenSettings: () => void;
 }
 
 export function ChecklistScreen({
@@ -44,14 +45,171 @@ export function ChecklistScreen({
 	onCreateGoal,
 	onDeleteGoal,
 	onConcludeDay,
-	onLogout,
+	onOpenSettings,
 }: ChecklistScreenProps) {
+	const colors = useColors();
 	const [newItemText, setNewItemText] = useState("");
 	const [newGoalText, setNewGoalText] = useState("");
 	const [showGoalInput, setShowGoalInput] = useState(false);
 	const [removingId, setRemovingId] = useState<number | null>(null);
 	const [deletingGoalId, setDeletingGoalId] = useState<number | null>(null);
 	const [showAdvanceConfirm, setShowAdvanceConfirm] = useState(false);
+
+	const styles = useMemo(
+		() =>
+			StyleSheet.create({
+				container: {
+					flex: 1,
+					backgroundColor: colors.background,
+				},
+				header: {
+					backgroundColor: colors.surface,
+					paddingTop: 60,
+					paddingHorizontal: spacing.lg,
+					paddingBottom: spacing.md,
+					borderBottomWidth: 1,
+					borderBottomColor: colors.border,
+				},
+				headerRow: {
+					flexDirection: "row",
+					justifyContent: "space-between",
+					alignItems: "center",
+				},
+				dayTitle: {
+					fontSize: fontSize.xl,
+					fontWeight: "700",
+					color: colors.text,
+					marginBottom: spacing.xs,
+					textTransform: "capitalize",
+				},
+				progressText: {
+					fontSize: fontSize.sm,
+					color: colors.textSecondary,
+					marginBottom: spacing.sm,
+				},
+				progressBar: {
+					height: 6,
+					backgroundColor: colors.border,
+					borderRadius: 3,
+					overflow: "hidden",
+				},
+				progressFill: {
+					height: "100%",
+					backgroundColor: colors.success,
+					borderRadius: 3,
+				},
+				inputRow: {
+					flexDirection: "row",
+					paddingHorizontal: spacing.lg,
+					paddingVertical: spacing.md,
+					gap: spacing.sm,
+					backgroundColor: colors.surface,
+				},
+				itemInput: {
+					flex: 1,
+					borderWidth: 1,
+					borderColor: colors.border,
+					borderRadius: borderRadius.sm,
+					paddingHorizontal: spacing.md,
+					paddingVertical: spacing.sm,
+					fontSize: fontSize.md,
+					color: colors.text,
+					backgroundColor: colors.background,
+				},
+				goalsInput: {
+					borderWidth: 1,
+					borderColor: colors.border,
+					borderRadius: borderRadius.sm,
+					paddingHorizontal: spacing.md,
+					paddingVertical: spacing.sm,
+					fontSize: fontSize.md,
+					color: colors.text,
+					backgroundColor: colors.background,
+				},
+				addButton: {
+					width: 44,
+					height: 44,
+					backgroundColor: colors.primary,
+					borderRadius: borderRadius.sm,
+					alignItems: "center",
+					justifyContent: "center",
+				},
+				list: {
+					padding: spacing.lg,
+					flexGrow: 1,
+				},
+				emptyText: {
+					textAlign: "center",
+					color: colors.textSecondary,
+					fontSize: fontSize.md,
+					marginTop: spacing.xl,
+				},
+				checkbox: {
+					padding: 2,
+				},
+				itemRow: {
+					flexDirection: "row",
+					alignItems: "center",
+					backgroundColor: colors.surface,
+					padding: spacing.md,
+					borderRadius: borderRadius.sm,
+					marginBottom: spacing.sm,
+					gap: spacing.sm,
+				},
+				itemText: {
+					flex: 1,
+					fontSize: fontSize.md,
+					color: colors.text,
+				},
+				itemTextDone: {
+					textDecorationLine: "line-through",
+					color: colors.textSecondary,
+				},
+				goalsSection: {
+					backgroundColor: colors.surface,
+					paddingHorizontal: spacing.lg,
+					paddingVertical: spacing.md,
+					borderTopWidth: 1,
+					borderTopColor: colors.border,
+				},
+				goalsTitle: {
+					fontSize: fontSize.sm,
+					fontWeight: "700",
+					color: colors.textSecondary,
+					textTransform: "uppercase",
+					marginBottom: spacing.sm,
+				},
+				goalRow: {
+					flexDirection: "row",
+					alignItems: "center",
+					gap: spacing.sm,
+					paddingVertical: spacing.xs,
+				},
+				goalText: {
+					flex: 1,
+					fontSize: fontSize.md,
+					color: colors.text,
+				},
+				footer: {
+					padding: spacing.lg,
+					backgroundColor: colors.surface,
+					borderTopWidth: 1,
+					borderTopColor: colors.border,
+				},
+				footerButtons: {
+					flexDirection: "row",
+					gap: spacing.sm,
+				},
+				goalInputColumn: {
+					gap: spacing.md,
+				},
+				goalButtonRow: {
+					flexDirection: "row",
+					gap: spacing.sm,
+				},
+			}),
+		[colors],
+	);
 
 	const handleAdd = () => {
 		const text = newItemText.trim();
@@ -93,11 +251,11 @@ export function ChecklistScreen({
 			<View style={styles.header}>
 				<View style={styles.headerRow}>
 					<Text style={styles.dayTitle}>{formattedDay}</Text>
-					<TouchableOpacity onPress={onLogout}>
+					<TouchableOpacity onPress={onOpenSettings}>
 						<MaterialCommunityIcons
-							name="logout"
-							size={22}
-							color={colors.textSecondary}
+							name="cog-outline"
+							size={24}
+							color={colors.primary}
 						/>
 					</TouchableOpacity>
 				</View>
@@ -274,155 +432,3 @@ export function ChecklistScreen({
 		</View>
 	);
 }
-
-const styles = StyleSheet.create({
-	container: {
-		flex: 1,
-		backgroundColor: colors.background,
-	},
-	header: {
-		backgroundColor: colors.surface,
-		paddingTop: 60,
-		paddingHorizontal: spacing.lg,
-		paddingBottom: spacing.md,
-		borderBottomWidth: 1,
-		borderBottomColor: colors.border,
-	},
-	headerRow: {
-		flexDirection: "row",
-		justifyContent: "space-between",
-		alignItems: "center",
-	},
-	dayTitle: {
-		fontSize: fontSize.xl,
-		fontWeight: "700",
-		color: colors.text,
-		marginBottom: spacing.xs,
-		textTransform: "capitalize",
-	},
-	progressText: {
-		fontSize: fontSize.sm,
-		color: colors.textSecondary,
-		marginBottom: spacing.sm,
-	},
-	progressBar: {
-		height: 6,
-		backgroundColor: colors.border,
-		borderRadius: 3,
-		overflow: "hidden",
-	},
-	progressFill: {
-		height: "100%",
-		backgroundColor: colors.success,
-		borderRadius: 3,
-	},
-	inputRow: {
-		flexDirection: "row",
-		paddingHorizontal: spacing.lg,
-		paddingVertical: spacing.md,
-		gap: spacing.sm,
-		backgroundColor: colors.surface,
-	},
-	itemInput: {
-		flex: 1,
-		borderWidth: 1,
-		borderColor: colors.border,
-		borderRadius: borderRadius.sm,
-		paddingHorizontal: spacing.md,
-		paddingVertical: spacing.sm,
-		fontSize: fontSize.md,
-		color: colors.text,
-		backgroundColor: colors.background,
-	},
-	goalsInput: {
-		borderWidth: 1,
-		borderColor: colors.border,
-		borderRadius: borderRadius.sm,
-		paddingHorizontal: spacing.md,
-		paddingVertical: spacing.sm,
-		fontSize: fontSize.md,
-		color: colors.text,
-		backgroundColor: colors.background,
-	},
-	addButton: {
-		width: 44,
-		height: 44,
-		backgroundColor: colors.primary,
-		borderRadius: borderRadius.sm,
-		alignItems: "center",
-		justifyContent: "center",
-	},
-	list: {
-		padding: spacing.lg,
-		flexGrow: 1,
-	},
-	emptyText: {
-		textAlign: "center",
-		color: colors.textSecondary,
-		fontSize: fontSize.md,
-		marginTop: spacing.xl,
-	},
-	itemRow: {
-		flexDirection: "row",
-		alignItems: "center",
-		backgroundColor: colors.surface,
-		padding: spacing.md,
-		borderRadius: borderRadius.sm,
-		marginBottom: spacing.sm,
-		gap: spacing.sm,
-	},
-	checkbox: {
-		padding: 2,
-	},
-	itemText: {
-		flex: 1,
-		fontSize: fontSize.md,
-		color: colors.text,
-	},
-	itemTextDone: {
-		textDecorationLine: "line-through",
-		color: colors.textSecondary,
-	},
-	goalsSection: {
-		backgroundColor: colors.surface,
-		paddingHorizontal: spacing.lg,
-		paddingVertical: spacing.md,
-		borderTopWidth: 1,
-		borderTopColor: colors.border,
-	},
-	goalsTitle: {
-		fontSize: fontSize.sm,
-		fontWeight: "700",
-		color: colors.textSecondary,
-		textTransform: "uppercase",
-		marginBottom: spacing.sm,
-	},
-	goalRow: {
-		flexDirection: "row",
-		alignItems: "center",
-		gap: spacing.sm,
-		paddingVertical: spacing.xs,
-	},
-	goalText: {
-		flex: 1,
-		fontSize: fontSize.md,
-		color: colors.text,
-	},
-	footer: {
-		padding: spacing.lg,
-		backgroundColor: colors.surface,
-		borderTopWidth: 1,
-		borderTopColor: colors.border,
-	},
-	footerButtons: {
-		flexDirection: "row",
-		gap: spacing.sm,
-	},
-	goalInputColumn: {
-		gap: spacing.md,
-	},
-	goalButtonRow: {
-		flexDirection: "row",
-		gap: spacing.sm,
-	},
-});

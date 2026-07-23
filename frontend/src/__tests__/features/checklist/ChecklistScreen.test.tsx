@@ -18,7 +18,7 @@ function createProps(
 		onCreateGoal: jest.fn(),
 		onDeleteGoal: jest.fn(),
 		onConcludeDay: jest.fn(),
-		onLogout: jest.fn(),
+		onOpenSettings: jest.fn(),
 		...overrides,
 	};
 }

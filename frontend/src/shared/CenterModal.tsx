@@ -1,6 +1,8 @@
 import { MaterialIcons } from "@expo/vector-icons";
+import { useMemo } from "react";
 import { Modal, Platform, StyleSheet, Text, View } from "react-native";
-import { borderRadius, colors, fontSize, spacing } from "@/styles/tokens";
+import { useColors } from "@/styles/theme";
+import { borderRadius, fontSize, spacing } from "@/styles/tokens";
 
 export interface CenterModalProps {
 	visible: boolean;
@@ -16,9 +18,51 @@ export function CenterModal({
 	title,
 	message,
 	icon,
-	iconColor = colors.primary,
+	iconColor,
 	children,
 }: CenterModalProps) {
+	const colors = useColors();
+
+	const styles = useMemo(
+		() =>
+			StyleSheet.create({
+				overlay: {
+					flex: 1,
+					backgroundColor: "rgba(0,0,0,0.5)",
+					justifyContent: "center",
+					alignItems: "center",
+				},
+				androidTop: {
+					paddingTop: 24,
+				},
+				card: {
+					width: "80%",
+					backgroundColor: colors.surface,
+					borderRadius: borderRadius.lg,
+					padding: spacing.xl,
+					alignItems: "center",
+				},
+				icon: {
+					marginBottom: spacing.md,
+				},
+				title: {
+					fontSize: fontSize.title,
+					fontWeight: "700",
+					color: colors.text,
+					textAlign: "center",
+					marginBottom: spacing.sm,
+				},
+				message: {
+					fontSize: fontSize.md,
+					color: colors.textSecondary,
+					textAlign: "center",
+					lineHeight: 20,
+					marginBottom: spacing.xl,
+				},
+			}),
+		[colors],
+	);
+
 	return (
 		<Modal
 			visible={visible}
@@ -34,7 +78,7 @@ export function CenterModal({
 						<MaterialIcons
 							name={icon}
 							size={40}
-							color={iconColor}
+							color={iconColor ?? colors.primary}
 							style={styles.icon}
 						/>
 					)}
@@ -46,39 +90,3 @@ export function CenterModal({
 		</Modal>
 	);
 }
-
-const styles = StyleSheet.create({
-	overlay: {
-		flex: 1,
-		backgroundColor: "rgba(0,0,0,0.5)",
-		justifyContent: "center",
-		alignItems: "center",
-	},
-	androidTop: {
-		paddingTop: 24,
-	},
-	card: {
-		width: "80%",
-		backgroundColor: colors.surface,
-		borderRadius: borderRadius.lg,
-		padding: spacing.xl,
-		alignItems: "center",
-	},
-	icon: {
-		marginBottom: spacing.md,
-	},
-	title: {
-		fontSize: fontSize.title,
-		fontWeight: "700",
-		color: colors.text,
-		textAlign: "center",
-		marginBottom: spacing.sm,
-	},
-	message: {
-		fontSize: fontSize.md,
-		color: colors.textSecondary,
-		textAlign: "center",
-		lineHeight: 20,
-		marginBottom: spacing.xl,
-	},
-});

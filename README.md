@@ -14,6 +14,9 @@ App React Native (Expo) com backend NestJS para acompanhamento de metas e checkl
 │   ├── src/
 │   │   ├── auth/
 │   │   ├── users/
+│   │   │   ├── users.controller.ts  # PATCH /users/profile
+│   │   │   ├── users.service.ts
+│   │   │   └── users.module.ts
 │   │   ├── goals/
 │   │   ├── checklist/
 │   │   ├── app.module.ts
@@ -34,7 +37,8 @@ O app permite que o usuário gerencie suas metas e checklists diários de forma 
 - **Metas**: Metas persistentes definidas pelo usuário
 - **Checklist Diário**: Itens específicos do dia que podem ser marcados como concluídos
 - **Concluir por hoje**: Desmarca todos os itens do checklist (não apaga, não avança o dia)
-- **Autenticação**: Sistema simples de login/registro via backend
+- **Configurações**: Edição de nome, toggle de dark mode e logout
+- **Dark Mode**: Alternância entre tema claro/escuro com persistência
 
 ## Principais Funcionalidades
 
@@ -42,6 +46,8 @@ O app permite que o usuário gerencie suas metas e checklists diários de forma 
 - **Checklist Diário**: Adicionar itens ao checklist do dia e marcá-los como concluídos
 - **Concluir por hoje**: Botão para desmarcar todos os itens do checklist (não apaga, não avança o dia)
 - **Autenticação**: Sistema de registro e login com email e senha
+- **Configurações**: Editar nome do perfil, alternar dark mode e sair da conta
+- **Tema escuro**: Interface adaptável com persistência da preferência
 
 ### Fluxo de Autenticação
 
@@ -75,11 +81,18 @@ features/auth/
 ### Tela de Checklist
 
 A tela principal exibe:
-- **Header**: Data formatada em português + botão de logout
+- **Header**: Data formatada em português + botão de configurações (engrenagem)
 - **Barra de progresso**: Percentual de itens concluídos
 - **Input rápido**: Adicionar item ao checklist do dia
 - **Lista de itens**: Cada item com checkbox (toggle) e botão de deletar (com confirmação)
 - **Footer**: Botões para criar nova meta e concluir por hoje
+
+### Tela de Configurações
+
+A tela de configurações (`/settings`) permite:
+- **Editar nome**: Campo de formulário com validação para alterar o nome do perfil
+- **Modo escuro**: Toggle Switch para alternar entre tema claro e escuro (persistido via AsyncStorage)
+- **Sair da conta**: Botão que limpa tokens de autenticação e retorna à tela de login
 
 ## Como Rodar o Projeto
 
@@ -113,11 +126,11 @@ O backend usa SQLite em memória por padrão (via `better-sqlite3`). Nenhuma con
 ## Testes
 
 ```bash
-# Backend (Vitest) — 5 suites, 26 testes
+# Backend (Vitest) — 6 suites, 27 testes
 cd backend
 pnpm test
 
-# Frontend (Jest + React Native Testing Library) — 15 suites, 79 testes
+# Frontend (Jest + React Native Testing Library) — 20 suites, 99 testes
 cd frontend
 pnpm test
 ```
@@ -153,6 +166,7 @@ Os testes usam `@nestjs/testing` + `supertest` ou testes de serviço diretos:
 | `health.controller.ts` | `health.test.ts` |
 | `auth/auth.service.ts` | `auth/auth.test.ts` |
 | `users/users.service.ts` | `users/users.service.test.ts` |
+| `users/users.controller.ts` | `users/users.controller.test.ts` |
 | `goals/goals.service.ts` | `goals/goals.test.ts` |
 | `checklist/checklist.service.ts` | `checklist/checklist.test.ts` |
 
@@ -259,6 +273,7 @@ frontend/src/
   app/                    # Expo Router (file-based routing)
     _layout.tsx           # Layout raiz (Stack navigator)
     index.tsx             # Tela inicial (auth ou checklist conforme estado)
+    settings.tsx          # Tela de configurações
   shared/                 # Componentes compartilhados de UI
     CustomButton.tsx      # Botão reutilizável (primary/secondary/danger)
     FormInput.tsx         # Input de formulário com label e erro
@@ -283,14 +298,25 @@ frontend/src/
         useDayProgress.ts    # Hook de cálculo de progresso
       services/
         checklistApi.ts      # Chamadas HTTP para /goals e /checklist
+    settings/
+      SettingsContainer.tsx  # Container — orquestra hook de configurações
+      SettingsScreen.tsx     # Screen — edição de nome, dark mode, logout
+      hooks/
+        useSettings.ts       # Hook com formulário, dark mode toggle e logout
+      services/
+        settingsApi.ts       # Chamadas HTTP para /users/profile
   stores/
     authStore.ts         # Zustand store com persist (AsyncStorage)
+    themeStore.ts        # Zustand store com persist (AsyncStorage) para dark mode
   styles/
     tokens.ts            # Design tokens (colors, spacing, fontSize, borderRadius)
+    theme.ts             # Hook useColors() que retorna cores claras ou escuras
   lib/
     asyncStorage.ts      # Wrapper AsyncStorage
   types.ts               # Tipos globais (User, Goal, ChecklistItem, DayData)
   __tests__/             # Testes espelhando a estrutura source
+    stores/
+      themeStore.test.ts # Testes da store de tema
     shared/
       CustomButton.test.tsx
       FormInput.test.tsx
@@ -310,6 +336,11 @@ frontend/src/
         hooks/useChecklist.test.tsx
         hooks/useDayProgress.test.ts
         services/checklistApi.test.ts
+      settings/
+        SettingsContainer.test.tsx
+        SettingsScreen.test.tsx
+        hooks/useSettings.test.tsx
+        services/settingsApi.test.ts
 ```
 
 ## Endpoints do Backend
@@ -327,6 +358,7 @@ frontend/src/
 | PATCH | `/checklist/:id` | JWT | Alternar item |
 | DELETE | `/checklist/:id` | JWT | Remover item |
 | POST | `/checklist/advance-day` | JWT | Concluir por hoje |
+| PATCH | `/users/profile` | JWT | Atualizar nome do perfil |
 
 ## Schema do Banco
 

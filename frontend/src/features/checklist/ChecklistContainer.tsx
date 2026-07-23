@@ -1,5 +1,4 @@
-import { alert } from "@/shared/Alert";
-import { useAuthStore } from "@/stores/authStore";
+import { useRouter } from "expo-router";
 import { ChecklistScreen } from "./ChecklistScreen";
 import { useChecklist } from "./hooks/useChecklist";
 import { useDayProgress } from "./hooks/useDayProgress";
@@ -19,11 +18,10 @@ export function ChecklistContainer() {
 
 	const { total, completed, percentage } = useDayProgress(dayData?.items ?? []);
 
-	const logout = useAuthStore((s) => s.logout);
+	const router = useRouter();
 
-	function handleLogout() {
-		alert.info("Você saiu da sua conta");
-		logout();
+	function handleOpenSettings() {
+		router.push("/settings");
 	}
 
 	return (
@@ -40,7 +38,7 @@ export function ChecklistContainer() {
 			onCreateGoal={handleCreateGoal}
 			onDeleteGoal={handleDeleteGoal}
 			onConcludeDay={handleConcludeDay}
-			onLogout={handleLogout}
+			onOpenSettings={handleOpenSettings}
 		/>
 	);
 }

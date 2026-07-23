@@ -36,4 +36,15 @@ export class UsersService {
 		);
 		return result.rows[0] as User;
 	}
+
+	async updateName(
+		id: number,
+		name: string,
+	): Promise<Omit<User, "password"> | null> {
+		const result = await this.pool.query(
+			'UPDATE users SET name = ? WHERE id = ? RETURNING id, email, name, "createdAt"',
+			[name, id],
+		);
+		return (result.rows[0] as Omit<User, "password">) ?? null;
+	}
 }

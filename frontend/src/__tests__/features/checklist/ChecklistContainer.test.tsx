@@ -2,6 +2,10 @@ import { render } from "@testing-library/react-native";
 import { ChecklistContainer } from "../../../features/checklist/ChecklistContainer";
 import { useAuthStore } from "../../../stores/authStore";
 
+jest.mock("expo-router", () => ({
+	useRouter: () => ({ push: jest.fn() }),
+}));
+
 jest.mock("../../../features/checklist/services/checklistApi", () => ({
 	fetchDayData: jest.fn().mockResolvedValue({ day: "2026-07-22", items: [] }),
 	fetchGoals: jest.fn().mockResolvedValue([]),
