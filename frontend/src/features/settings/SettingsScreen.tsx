@@ -78,7 +78,11 @@ export function SettingsScreen({
 						placeholder="Seu nome"
 					/>
 
-					<CustomButton title="Salvar" onPress={onSubmit} loading={loading} />
+					<CustomButton
+						title="Atualizar"
+						onPress={onSubmit}
+						loading={loading}
+					/>
 				</View>
 
 				<View
